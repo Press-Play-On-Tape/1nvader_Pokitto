@@ -12,7 +12,7 @@ void Game::tugOfWar_Init() {
     gameState = GameState::TugOfWar;
 
     mothership.reset(this->cookie->gameRotation, 0);
-    mothership.setHeight(60);
+    mothership.setHeight((Constants::ScreenWidth / 2) - 4);
 
     player1.reset(0);
     player2.reset(1);
@@ -62,7 +62,7 @@ void Game::tugOfWar() {
     // End of game?
 
     if ((mothership.getHeight() <= Constants::PlayerHeight) ||
-        (mothership.getHeight() >= 124 - Constants::PlayerHeight)) {
+        (mothership.getHeight() >= 96 - Constants::PlayerHeight)) {
 
         switch (mothership.getMovement()) {
 
@@ -85,7 +85,7 @@ void Game::tugOfWar() {
     }
        
 
-    renderScenery(this->cookie->gameMode);
+    renderScenery(this->cookie->gameMode, false);
     renderScoreTugOfWar(player1.getScore(), player2.getScore());
     updateAndRenderParticles(GameRotation::Landscape);
 
@@ -97,11 +97,11 @@ void Game::tugOfWar() {
 
     }
 
-    PD::drawBitmap(120, player2.getPos(), Images::Portrait::Rotated::Player);
+    PD::drawBitmap(102, player2.getPos(), Images::Portrait::Rotated::Player);
 
     if (player2.getExplosionCounter() > 0) {
 
-        PD::drawBitmap(120, player2.getPos() - 4, Images::Portrait::Rotated::Player_Explosion[(6 - player2.getExplosionCounter()) / 2]);
+        PD::drawBitmap(102, player2.getPos() - 4, Images::Portrait::Rotated::Player_Explosion[(6 - player2.getExplosionCounter()) / 2]);
 
     }
 

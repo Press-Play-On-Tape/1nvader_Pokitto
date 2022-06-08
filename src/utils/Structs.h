@@ -39,7 +39,7 @@ struct TitleScreenVars {
 
             case GameRotation::Portrait:
             
-                this->counter = 89;
+                this->counter = 79;//SJH 89
                 break;
 
             case GameRotation::Landscape:

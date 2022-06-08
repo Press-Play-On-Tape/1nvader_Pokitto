@@ -113,7 +113,7 @@ void Game::gameOver() {
     // Render screen ---------------------------------------------------------------------
 
     renderScores(gameOverScreenVars.flashPlayer1, gameOverScreenVars.flashPlayer2);
-    renderScenery(this->cookie->gameMode);
+    renderScenery(this->cookie->gameMode, true);
 
     uint8_t frame = (PC::frameCount % 36) / 6;
 

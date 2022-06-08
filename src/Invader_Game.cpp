@@ -245,7 +245,7 @@ void Game::game() {
     // Render screen ---------------------------------------------------------------------
 
     renderScores(false, false);
-    renderScenery(this->cookie->gameMode);
+    renderScenery(this->cookie->gameMode, false);
     updateAndRenderParticles(this->cookie->gameRotation);
 
     uint8_t frame = (PC::frameCount % 36) / 6;

@@ -2,7 +2,7 @@
 
 #pragma once
 
-inline constexpr uint8_t Number_0[] = {
+inline constexpr uint8_t Number_0_Rot[] = {
 0x05,0x03,
 0x77,0x77,0x70,
 0x70,0x00,0x70,

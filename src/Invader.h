@@ -76,7 +76,7 @@ class Game {
         void playSoundEffect(SoundEffect soundEffect);
 
         void renderSceneryPortrait();
-        void renderScenery(GameMode gameMode);
+        void renderScenery(GameMode gameMode, bool hideCentreline);
         void renderHighScore(GameMode gameMode, bool centre);
         void renderInvaderSign();
         bool collide(Rect rect1, Rect rect2);

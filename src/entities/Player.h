@@ -103,7 +103,7 @@ struct Player {
                                     break;
 
                                 case 1:
-                                    this->bulletX = 112;
+                                    this->bulletX = 98;
                                     this->bulletY = this->pos + 3 + (this->movement == Movement::Up ? 1 : 0);
                                     this->bulletActive = true;
                                     changeMovement(gameRotation);

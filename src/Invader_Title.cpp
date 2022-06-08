@@ -32,7 +32,7 @@ void Game::title_Init() {
 //
 void Game::title() {
 
-    renderScenery(GameMode::Single);
+    renderScenery(GameMode::Single, false);
     renderHighScore(this->cookie->gameMode, false);
     
     if (PC::buttons.pressed(BTN_B)) {
@@ -49,33 +49,33 @@ void Game::title() {
 
         case GameRotation::Portrait:
            
-            PD::drawBitmap(titleScreenVars.counter, 12, Images::Portrait::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
+            PD::drawBitmap(titleScreenVars.counter, 24, Images::Portrait::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
 
             switch (titleScreenVars.counter) {
 
-                case 89:
+                case 79: //SJH 89
                     renderPlayerSelection(true);
                     renderInvaderSign();
                     break;
 
-                case 90 ... 97:
+                case 80 ... 87: //SJH 90 ..97
                     renderPlayerSelection(true);
                     renderInvaderSign();
                     titleScreenVars.counter++;
                     break;
 
-                case 98 ... 105:
+                case 88 ... 95: //SJH 98 .. 105
                     renderPlayerSelection(false);
                     renderInvaderSign();
                     titleScreenVars.counter++;
                     break;
 
-                case 106 ... 128:
+                case 96 ... 110: //SJH 106 .. 128
                     renderPlayerSelection(false);
                     titleScreenVars.counter++;
                     break;
 
-                case 129:
+                case 111: // SJH 129
 
                     switch (this->cookie->gameMode) {
 
@@ -105,9 +105,9 @@ void Game::title() {
 
             }
 
-            if (PC::buttons.pressed(BTN_A) && titleScreenVars.counter == 89) { 
+            if (PC::buttons.pressed(BTN_A) && titleScreenVars.counter == 79) {  //SJH 89
 
-                titleScreenVars.counter = 90;
+                titleScreenVars.counter = 80;//SJH 90
 
             }
 
@@ -115,7 +115,7 @@ void Game::title() {
 
         case GameRotation::Landscape:
            
-            PD::drawBitmap(14, titleScreenVars.counter, Images::Landscape::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
+            PD::drawBitmap(8, titleScreenVars.counter, Images::Landscape::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
 
             switch (titleScreenVars.counter) {
 
@@ -198,30 +198,30 @@ void Game::renderPlayerSelection(bool renderPlayerSelection) {
 
         case GameRotation::Portrait:
 
-            PD::drawBitmap(31, 20, Images::Portrait::Rotate);
+            PD::drawBitmap(28, 32, Images::Portrait::Rotate);
 
             if (!renderPlayerSelection) return;
 
-            PD::drawBitmap(62 - (static_cast<uint8_t>(this->cookie->gameMode) * 8), 5, Images::Portrait::DownArrow[frame]);
-            PD::drawBitmap(62, 13, Images::Portrait::SurvivalMode);
-            PD::drawBitmap(54, 13, Images::Portrait::VSMode);
-            PD::drawBitmap(46, 13, Images::Portrait::TugOfWarMode);
+            PD::drawBitmap(54 - (static_cast<uint8_t>(this->cookie->gameMode) * 8), 17, Images::Portrait::DownArrow[frame]);
+            PD::drawBitmap(54, 25, Images::Portrait::SurvivalMode);
+            PD::drawBitmap(46, 25, Images::Portrait::VSMode);
+            PD::drawBitmap(38, 25, Images::Portrait::TugOfWarMode);
 
-            if (this->cookie->getLevel(0) == 0) PD::drawBitmap(54, 5, Images::Portrait::Lock);
-            if (this->cookie->getLevel(1) == 0) PD::drawBitmap(46, 5, Images::Portrait::Lock);
+            if (this->cookie->getLevel(0) == 0) PD::drawBitmap(46, 17, Images::Portrait::Lock);
+            if (this->cookie->getLevel(1) == 0) PD::drawBitmap(38, 17, Images::Portrait::Lock);
 
             break;
 
         case GameRotation::Landscape:
 
-            PD::drawBitmap(85, 53, Images::Landscape::Rotate);
+            PD::drawBitmap(80, 53, Images::Landscape::Rotate);
 
             if (!renderPlayerSelection) return;
 
-            PD::drawBitmap(71, 12 + (static_cast<uint8_t>(this->cookie->gameMode) * 9), Images::Landscape::LeftArrow[frame]);
-            PD::drawBitmap(79, 12, Images::Landscape::SurvivalMode);
-            PD::drawBitmap(79, 21, Images::Landscape::VSMode);
-            PD::drawBitmap(79, 30, Images::Landscape::TugOfWarMode);
+            PD::drawBitmap(56, 12 + (static_cast<uint8_t>(this->cookie->gameMode) * 9), Images::Landscape::LeftArrow[frame]);
+            PD::drawBitmap(64, 12, Images::Landscape::SurvivalMode);
+            PD::drawBitmap(64, 21, Images::Landscape::VSMode);
+            PD::drawBitmap(64, 30, Images::Landscape::TugOfWarMode);  //71 and 79 SJH
 
             if (this->cookie->getLevel(0) == 0) PD::drawBitmap(71, 21, Images::Landscape::Lock);
             if (this->cookie->getLevel(1) == 0) PD::drawBitmap(71, 30, Images::Landscape::Lock);

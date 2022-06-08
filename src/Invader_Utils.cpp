@@ -134,11 +134,11 @@ void Game::renderScores(bool flashPlayer1, bool flashPlayer2) {
                     }
 
                     if (!flashPlayer2 || ((PC::frameCount % Constants::FlashSpeed) < (Constants::FlashSpeed / 2))) {
-                        renderScore(46, Constants::ScreenWidth - 7, player2.getScore());
+                        renderScore(70, Constants::ScreenWidth - 7, player2.getScore());
                     }
 
-                    PD::drawBitmap(Constants::ScreenWidth - 7, 28, Images::Portrait::Normal::Numbers[mothership.getCounter() / 10]);
-                    PD::drawBitmap(Constants::ScreenWidth - 7, 32, Images::Portrait::Normal::Numbers[mothership.getCounter() % 10]);
+                    PD::drawBitmap(Constants::ScreenWidth - 7, 40, Images::Portrait::Normal::Numbers[mothership.getCounter() / 10]);
+                    PD::drawBitmap(Constants::ScreenWidth - 7, 44, Images::Portrait::Normal::Numbers[mothership.getCounter() % 10]);
 
                     break;
                 
@@ -149,7 +149,7 @@ void Game::renderScores(bool flashPlayer1, bool flashPlayer2) {
                     }
 
                     if (!flashPlayer2 || ((PC::frameCount % Constants::FlashSpeed) < (Constants::FlashSpeed / 2))) {
-                        renderScore(46, Constants::ScreenWidth - 12, player2.getScore());
+                        renderScore(70, Constants::ScreenWidth - 12, player2.getScore());
                     }
 
                     break;
@@ -163,15 +163,15 @@ void Game::renderScores(bool flashPlayer1, bool flashPlayer2) {
             if (this->cookie->gameMode == GameMode::Double) {
 
                 if (!flashPlayer1 || ((PC::frameCount % Constants::FlashSpeed) < (Constants::FlashSpeed / 2))) {
-                    renderScore(36, 0, player1.getScore());
+                    renderScore(19, 0, player1.getScore());
                 }
 
                 if (!flashPlayer2 || ((PC::frameCount % Constants::FlashSpeed) < (Constants::FlashSpeed / 2))) {
                     renderScore(100, 0, player2.getScore());
                 }
 
-                PD::drawBitmap(61, 0, Images::Landscape::Numbers[mothership.getCounter() / 10]);
-                PD::drawBitmap(65, 0, Images::Landscape::Numbers[mothership.getCounter() % 10]);
+                PD::drawBitmap(51, 0, Images::Landscape::Numbers[mothership.getCounter() / 10]);
+                PD::drawBitmap(55, 0, Images::Landscape::Numbers[mothership.getCounter() % 10]);
 
             }
             else {
@@ -231,12 +231,12 @@ void Game::renderScoreTugOfWar(uint16_t score1, uint16_t score2) {
     uint8_t location = 14;
     for (uint8_t j = 4; j > 0; --j, location -= 4) {
 
-        PD::drawBitmap(113, location, Images::Portrait::Rotated::Numbers[digits[j - 1]]);
+        PD::drawBitmap(95, location, Images::Portrait::Rotated::Numbers[digits[j - 1]]);
 
     }
 
     extractDigits(digits, score1);
-    location = 47;
+    location = 71;
     for (uint8_t j = 4; j > 0; --j, location += 4) {
 
         PD::drawBitmap(10, location, Images::Portrait::Normal::Numbers[digits[j - 1]]);
@@ -276,7 +276,7 @@ void Game::renderSceneryPortrait() {
 
 }
 
-void Game::renderScenery(GameMode gameMode) {
+void Game::renderScenery(GameMode gameMode, bool hideCentreline) {
 
     switch (this->cookie->gameRotation) {
 
@@ -288,19 +288,27 @@ void Game::renderScenery(GameMode gameMode) {
 
                     renderSceneryPortrait();
 
-                    for (int8_t y = -2; y < 64; y+=16) {
+                    for (int8_t y = -2; y < Constants::ScreenHeight; y+=16) {
 
-                        PD::drawBitmap(103, y, Images::Portrait::Mountain_TOP);
+                        PD::drawBitmap(85, y, Images::Portrait::Mountain_BOT);//SJH
 
                     }
 
-                    PD::drawBitmap(125, 0, Images::Portrait::Ground_TOP);
+                    for (int8_t y = 0; y < Constants::ScreenHeight; y+=8) {
 
-                    for (uint8_t y = 1; y < 64; y = y + 4) {
+                        PD::drawBitmap(107, y, Images::Portrait::Ground_TOP);//SJH 125
 
-                        PD::drawFastVLine(64, y, 2);
+                    }
 
-                    } 
+                    if (!hideCentreline) {
+
+                        for (uint8_t y = 1; y < Constants::ScreenHeight; y = y + 4) {
+
+                            PD::drawFastVLine(Constants::ScreenWidth / 2, y, 2);
+
+                        } 
+
+                    }
 
                     break;
 
@@ -397,12 +405,12 @@ void Game::renderInvaderSign() {
 
         case GameRotation::Portrait:
 
-            PD::drawBitmap(78, 7, Images::Portrait::Invader);
+            PD::drawBitmap(68, 19, Images::Portrait::Invader);
             break;
 
         case GameRotation::Landscape:
 
-            PD::drawBitmap(9, 31, Images::Landscape::Invader);
+            PD::drawBitmap(5, 31, Images::Landscape::Invader);
             break;
     
     }

@@ -31,7 +31,7 @@ class GameCookie : public Pokitto::Cookie {
 			this->gameRotation = GameRotation::Landscape;
 			this->levelLock[0] = 1;	//SJH
 			this->levelLock[1] = 1;	//SJH
-			this->levelLock[2] = 1; //SJH
+			this->levelLock[2] = 0;
 
 			this->saveCookie();
 
@@ -58,6 +58,7 @@ class GameCookie : public Pokitto::Cookie {
 			if (oldScore < score) {
 
 				this->highScore[static_cast<uint8_t>(mode)] = score;
+				this->saveCookie();
 
 			}
 
@@ -79,7 +80,12 @@ class GameCookie : public Pokitto::Cookie {
 		*/
 		void saveMode(GameMode mode) {
 
-			this->gameMode = mode;
+			if (mode != this->gameMode) {
+
+				this->gameMode = mode;
+				this->saveCookie();
+
+			}
 
 		}
 
@@ -99,7 +105,12 @@ class GameCookie : public Pokitto::Cookie {
 		*/
 		void saveRotation(GameRotation rotation) {
 
-			this->gameRotation = rotation;
+			if (rotation != this->gameRotation) {
+
+				this->gameRotation = rotation;
+				this->saveCookie();
+
+			}
 			
 		}
 
@@ -118,7 +129,12 @@ class GameCookie : public Pokitto::Cookie {
 		*/
 		void saveLevel(uint8_t level, uint8_t value) {
 
-			this->levelLock[level] = value;
+			if (this->levelLock[level] != value) {
+
+				this->levelLock[level] = value;
+				this->saveCookie();
+
+			}
 
 		}
 
