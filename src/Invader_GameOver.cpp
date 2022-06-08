@@ -80,7 +80,7 @@ void Game::gameOver() {
 
         case GameRotation::Portrait:
 
-            if (gameOverScreenVars.counter > 58) {//SJH75) {
+            if (gameOverScreenVars.counter > 58) {
 
                 gameOverScreenVars.counter--;
 
@@ -140,7 +140,7 @@ void Game::gameOver() {
 
             if (gameOverScreenVars.counter == 4) {
 
-                PD::drawBitmap(23, 32, Images::Landscape::GameOver);
+                PD::drawBitmap(23, 38, Images::Landscape::GameOver);
                 
                 if (!gameOverScreenVars.newHighScore || (PC::frameCount % Constants::FlashSpeed) < (Constants::FlashSpeed / 2)) {
                     renderHighScore(this->cookie->gameMode, true);

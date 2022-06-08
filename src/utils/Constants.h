@@ -40,7 +40,7 @@ namespace Constants {
 
     namespace Landscape {
         constexpr int8_t PlayerMinPos = -1;
-        constexpr int8_t PlayerMaxPos = ScreenWidth - 11;//117;
+        constexpr int8_t PlayerMaxPos = ScreenWidth - 11;
     }
 
     constexpr uint8_t MothershipHeight = 9;
@@ -51,7 +51,6 @@ namespace Constants {
 
     namespace Portrait {
         constexpr int16_t MothershipMinPos = -2800;
-//        constexpr int16_t MothershipMaxPos = 7500;
         constexpr int16_t MothershipMaxPos = 9800;
         constexpr int16_t MothershipStartHeight = ScreenWidth - 24;
     }
@@ -59,7 +58,7 @@ namespace Constants {
     namespace Landscape {
         constexpr int16_t MothershipMinPos = -2800;
         constexpr int16_t MothershipMaxPos = 13800;
-        constexpr int16_t MothershipStartHeight = 4; 
+        constexpr int16_t MothershipStartHeight = 16;
     }
     
     constexpr uint8_t Mothership_Frames[] = { 0, 1, 2, 3, 2, 1 };

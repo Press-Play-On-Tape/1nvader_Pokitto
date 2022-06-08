@@ -290,13 +290,13 @@ void Game::renderScenery(GameMode gameMode, bool hideCentreline) {
 
                     for (int8_t y = -2; y < Constants::ScreenHeight; y+=16) {
 
-                        PD::drawBitmap(85, y, Images::Portrait::Mountain_BOT);//SJH
+                        PD::drawBitmap(85, y, Images::Portrait::Mountain_BOT);
 
                     }
 
                     for (int8_t y = 0; y < Constants::ScreenHeight; y+=8) {
 
-                        PD::drawBitmap(107, y, Images::Portrait::Ground_TOP);//SJH 125
+                        PD::drawBitmap(107, y, Images::Portrait::Ground_TOP);
 
                     }
 
@@ -341,13 +341,13 @@ void Game::renderScenery(GameMode gameMode, bool hideCentreline) {
 
             for (int16_t x = -2; x < Constants::ScreenWidth; x+=16) {
 
-                PD::drawBitmap(x, 42, Images::Landscape::Mountain);
+                PD::drawBitmap(x, 66, Images::Landscape::Mountain);
 
             }
 
             for (uint8_t x = 0; x < Constants::ScreenWidth; x+=8) {
 
-                PD::drawBitmap(x, 61, Images::Landscape::Ground);
+                PD::drawBitmap(x, 85, Images::Landscape::Ground);
 
             }
 

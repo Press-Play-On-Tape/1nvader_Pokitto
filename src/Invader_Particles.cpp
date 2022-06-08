@@ -60,8 +60,7 @@ void Game::updateAndRenderParticles(GameRotation gameRotation) {
                     } 
                     else {
 
-                        PD::setColor(7);
-                        PD::drawRect(particles[i].getY(), particles[i].getX(), pSize, pSize);
+                        PD::drawBitmap(particles[i].getY(), particles[i].getX(), Images::Particle);
 
                     }
 
@@ -77,8 +76,7 @@ void Game::updateAndRenderParticles(GameRotation gameRotation) {
                     } 
                     else {
 
-                        PD::setColor(7);
-                        PD::drawRect( particles[i].getX(), particles[i].getY(), pSize, pSize);
+                        PD::drawBitmap( particles[i].getX(), particles[i].getY(), Images::Particle);
 
                     }
 

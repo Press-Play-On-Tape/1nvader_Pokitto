@@ -2,6 +2,8 @@
 
 namespace Images {
 
+    #include "explosion/Particle.h"
+
     namespace Portrait {
 
         #include "explosion/portrait/Explosion_00.h"

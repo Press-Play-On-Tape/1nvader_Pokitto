@@ -120,7 +120,7 @@ struct Player {
                 case GameRotation::Landscape:
 
                     this->bulletX = this->pos + 3;
-                    this->bulletY = 55;
+                    this->bulletY = 79;
                     this->bulletActive = true;
                     if (!this->arePlayersTouching(otherPlayer)) changeMovement(gameRotation);
 

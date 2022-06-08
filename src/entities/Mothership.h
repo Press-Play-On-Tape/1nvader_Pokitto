@@ -318,7 +318,7 @@ struct Mothership {
 
                         if (player2.getPos() - Constants::PlayerHeight <= player1.getPos()) {
 
-                            player1.setPos(player2.getPos() - Constants::PlayerHeight);  //SJH << Height???
+                            player1.setPos(player2.getPos() - Constants::PlayerHeight);
 
                         }
 
@@ -404,7 +404,7 @@ struct Mothership {
 
             this->counter--;
 
-            if (this->counter == 0) { //SJH
+            if (this->counter == 0) {
                 this->counter = 80;
                 this->wave++;
                 return true;

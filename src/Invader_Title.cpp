@@ -53,30 +53,32 @@ void Game::title() {
 
             switch (titleScreenVars.counter) {
 
-                case 79: //SJH 89
+                case 79:
                     renderPlayerSelection(true);
                     renderInvaderSign();
                     break;
 
-                case 80 ... 87: //SJH 90 ..97
+                case 80 ... 87:
                     renderPlayerSelection(true);
                     renderInvaderSign();
                     titleScreenVars.counter++;
                     break;
 
-                case 88 ... 95: //SJH 98 .. 105
+                case 88 ... 95:
                     renderPlayerSelection(false);
                     renderInvaderSign();
                     titleScreenVars.counter++;
                     break;
 
-                case 96 ... 110: //SJH 106 .. 128
+                case 96 ... 110:
                     renderPlayerSelection(false);
                     titleScreenVars.counter++;
                     break;
 
-                case 111: // SJH 129
+                case 111:
 
+                    this->cookie->saveCookie();
+                    
                     switch (this->cookie->gameMode) {
 
                         case GameMode::Single ... GameMode::Double:
@@ -105,9 +107,9 @@ void Game::title() {
 
             }
 
-            if (PC::buttons.pressed(BTN_A) && titleScreenVars.counter == 79) {  //SJH 89
+            if (PC::buttons.pressed(BTN_A) && titleScreenVars.counter == 79) {
 
-                titleScreenVars.counter = 80;//SJH 90
+                titleScreenVars.counter = 80;
 
             }
 
@@ -221,7 +223,7 @@ void Game::renderPlayerSelection(bool renderPlayerSelection) {
             PD::drawBitmap(56, 12 + (static_cast<uint8_t>(this->cookie->gameMode) * 9), Images::Landscape::LeftArrow[frame]);
             PD::drawBitmap(64, 12, Images::Landscape::SurvivalMode);
             PD::drawBitmap(64, 21, Images::Landscape::VSMode);
-            PD::drawBitmap(64, 30, Images::Landscape::TugOfWarMode);  //71 and 79 SJH
+            PD::drawBitmap(64, 30, Images::Landscape::TugOfWarMode);
 
             if (this->cookie->getLevel(0) == 0) PD::drawBitmap(71, 21, Images::Landscape::Lock);
             if (this->cookie->getLevel(1) == 0) PD::drawBitmap(71, 30, Images::Landscape::Lock);

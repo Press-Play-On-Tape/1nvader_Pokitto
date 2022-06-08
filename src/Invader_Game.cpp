@@ -64,42 +64,13 @@ void Game::game_Init() {
 
     }            
 
-//SJH
-mothership.decHeight();
-mothership.decHeight();
-mothership.decHeight();
-mothership.decHeight();
-mothership.decHeight();
-mothership.decHeight();
-mothership.decHeight();
-mothership.decHeight();
-mothership.decHeight();
-
 }   
 
 void Game::game() {
 
-    // DEBUG
-    // if (arduboy.justPressed(DOWN_BUTTON)) {
-
-    //     bomb.setActive(true);
-    //     bomb.setPos(mothership.getPosDisplay() + 6);
-    //     bomb.setHeight(mothership.getHeight() + 6);
-
-    // }
-    // if (arduboy.justPressed(DOWN_BUTTON)) {
-
-    //     if (player1.getScore() < 80)        player1.setScore(79);
-    //     else if (player1.getScore() < 160)       player1.setScore(159);
-    //     else if (player1.getScore() < 240)       player1.setScore(239);
-
-    //     mothership.setCounter(1);
-
-    // }
-
     // Randomly drop a bomb ?
 
-    if (!gamePlayVars.waveCleared) {
+   if (!gamePlayVars.waveCleared) {
 
         if (player1.getScore() + player2.getScore() > 20) {
 
@@ -335,21 +306,21 @@ void Game::game() {
 
         case GameRotation::Landscape:
 
-            PD::drawBitmap(player1.getPos(), 56, Images::Landscape::Player);
+            PD::drawBitmap(player1.getPos(), 80, Images::Landscape::Player);
 
             if (player1.getExplosionCounter() > 0) {
 
-                PD::drawBitmap(player1.getPos() - 4, 52, Images::Landscape::Player_Explosion[(6 - player1.getExplosionCounter()) / 2]);
+                PD::drawBitmap(player1.getPos() - 4, 76, Images::Landscape::Player_Explosion[(6 - player1.getExplosionCounter()) / 2]);
 
             }
 
             if (this->cookie->gameMode == GameMode::Double) {
 
-                PD::drawBitmap(player2.getPos(), 56, Images::Landscape::Player);
+                PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player); 
 
                 if (player2.getExplosionCounter() > 0) {
 
-                    PD::drawBitmap(player2.getPos() - 4, 52, Images::Landscape::Player_Explosion[(6 - player2.getExplosionCounter()) / 2]);
+                    PD::drawBitmap(player2.getPos() - 4, 76, Images::Landscape::Player_Explosion[(6 - player2.getExplosionCounter()) / 2]);
 
                 }
 
@@ -464,14 +435,14 @@ void Game::game() {
 
             case GameRotation::Portrait:
                 PD::setColor(0);
-                PD::drawRect(60, 32 - (idx * 4), 9, 4 + (idx * 8));
-                PD::drawBitmap(60, 32 - (idx * 4), Images::Portrait::WaveCleared[idx]);
+                PD::drawRect(51, 44 - (idx * 4), 9, 4 + (idx * 8));
+                PD::drawBitmap(51, 44 - (idx * 4), Images::Portrait::WaveCleared[idx]);
                 break;
 
             case GameRotation::Landscape:
                 PD::setColor(0);
-                PD::drawRect(60 - (idx * 4), 24, 4 + (idx * 8), 9);
-                PD::drawBitmap(60 - (idx * 4), 24, Images::Landscape::WaveCleared[idx]);
+                PD::drawRect(53 - (idx * 4), 36, 4 + (idx * 8), 9);
+                PD::drawBitmap(53 - (idx * 4), 36, Images::Landscape::WaveCleared[idx]);
                 break;
 
         }         
