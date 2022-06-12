@@ -15,7 +15,7 @@ void Game::title_Init() {
     titleScreenVars.reset(this->cookie->gameRotation);
 
     #ifdef SOUNDS
-        sound.tones(Sounds::Theme);
+        //playTheme();
     #endif
 
     titleScreenVars.levels = 0;

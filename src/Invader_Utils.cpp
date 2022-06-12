@@ -6,18 +6,18 @@ using PC = Pokitto::Core;
 using PD = Pokitto::Display;
 
 
-void Game::playTheme() {
+void Game::playTheme(Theme theme) {
 
     #ifdef SOUNDS
 
-    constexpr char themes[1][19] = { "music/DarkB_01.raw" };
+    constexpr char themes[2][19] = { "music/1nvad_00.raw", "music/1nvad_01.raw" };
 
     switch (this->cookie->sfx) {
 
         case SoundEffects::Music:
         case SoundEffects::Both:
 
-            if (this->mainThemeFile.openRO(themes[0])) {
+            if (this->mainThemeFile.openRO(themes[static_cast<uint8_t>(theme)])) {
                 auto& music = Audio::play<0>(this->mainThemeFile);
                 music.setLoop(true);
             }
@@ -48,6 +48,8 @@ void Game::playSoundEffect(SoundEffect soundEffect) {
 
     #ifdef SOUNDS
 
+    constexpr char themes[1][19] = { "music/1nvad_00.raw" };
+
     switch (this->cookie->sfx) {
 
         case SoundEffects::SFX:
@@ -55,45 +57,29 @@ void Game::playSoundEffect(SoundEffect soundEffect) {
                 
             switch (soundEffect) {
                 
-                case SoundEffect::Tone_00:
-                    Audio::play<1>(Sounds::sfx_Tone_00);    
+                case SoundEffect::Laser:
+                    Audio::play<1>(Sounds::sfx_Laser);    
                     break;
                 
-                case SoundEffect::Tone_01:
-                    Audio::play<1>(Sounds::sfx_Tone_01);    
+                case SoundEffect::Mini_Explosion:
+                    Audio::play<1>(Sounds::sfx_Mini_Explosion);    
+                    break;
+                                
+                case SoundEffect::Level_Cleared:
+                    Audio::play<1>(Sounds::sfx_Level_Cleared);    
                     break;
                 
-                case SoundEffect::Tone_02:
-                    Audio::play<1>(Sounds::sfx_Tone_02);    
+                case SoundEffect::Bomb_HitGround:
+                    Audio::play<1>(Sounds::sfx_Bomb_HitGround);    
                     break;
                 
-                case SoundEffect::Tone_03:
-                    Audio::play<1>(Sounds::sfx_Tone_03);    
+                case SoundEffect::Drop_Bomb:
+                    Audio::play<1>(Sounds::sfx_Drop_Bomb);    
                     break;
-                            
-                case SoundEffect::Tone_04:
-                    Audio::play<1>(Sounds::sfx_Tone_04);    
-                    break;               
-                            
-                case SoundEffect::Tone_05:
-                    Audio::play<1>(Sounds::sfx_Tone_05);    
-                    break;               
-                            
-                case SoundEffect::Tone_06:
-                    Audio::play<1>(Sounds::sfx_Tone_06);    
-                    break;               
-
-                case SoundEffect::Tone_07:
-                    Audio::play<1>(Sounds::sfx_Tone_07);    
-                    break;               
-
-                case SoundEffect::Tone_08:
-                    Audio::play<1>(Sounds::sfx_Tone_08);    
-                    break;               
-
-                case SoundEffect::Tone_09:
-                    Audio::play<1>(Sounds::sfx_Tone_09);    
-                    break;               
+                
+                case SoundEffect::Player_Hit:
+                    Audio::play<1>(Sounds::sfx_Player_Hit);    
+                    break;
 
             }
 

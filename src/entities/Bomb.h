@@ -40,7 +40,7 @@ struct Bomb {
 
                 case GameRotation::Landscape:
                     this->height++;
-                    if (this->height > 71) {
+                    if (this->height > 95) {
                         this->active = false;
                     }
                     break;

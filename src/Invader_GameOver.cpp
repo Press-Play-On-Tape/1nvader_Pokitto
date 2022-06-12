@@ -65,7 +65,7 @@ void Game::gameOver_Init() {
     }
 
     #ifdef SOUNDS
-        sound.tones(Sounds::Game_Over);
+        playTheme(Theme::Game_Over);
     #endif
 
 }   

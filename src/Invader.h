@@ -71,7 +71,7 @@ class Game {
         void launchParticles(GameRotation gameRotation, int16_t x, int16_t y);
         void updateAndRenderParticles(GameRotation gameRotation);
 
-        void playTheme();
+        void playTheme(Theme theme);
         void muteTheme();
         void playSoundEffect(SoundEffect soundEffect);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#define _SOUNDS
+#define SOUNDS
 #define COOKIE_INITIALISED 39
 
 enum class SoundEffects : uint8_t {
@@ -8,6 +8,11 @@ enum class SoundEffects : uint8_t {
     Music,
     SFX,
     None
+};
+
+enum class Theme : uint8_t {
+    Game_Over,
+    Hover,
 };
 
 inline SoundEffects &operator++(SoundEffects &c ) {
@@ -71,14 +76,10 @@ inline TitleScreenMode operator--(TitleScreenMode &c, int ) {
 }
 
 enum class SoundEffect : uint8_t {
-    Tone_00,
-    Tone_01,
-    Tone_02,
-    Tone_03,
-    Tone_04,
-    Tone_05,
-    Tone_06,
-    Tone_07,
-    Tone_08,
-    Tone_09,
+    Laser,
+    Mini_Explosion,
+    Level_Cleared,
+    Bomb_HitGround,
+    Player_Hit,
+    Drop_Bomb,
 };

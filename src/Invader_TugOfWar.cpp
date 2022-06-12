@@ -35,7 +35,7 @@ void Game::tugOfWar() {
         bool fired = player1.fire(this->cookie->gameRotation, this->cookie->gameMode, nullptr);
 
         #ifdef SOUNDS
-            if (fired) sound.tones(Sounds::Player_Fires_Bullet);
+            if (fired) playSoundEffect(SoundEffect::Laser);
         #endif
 
     }
@@ -45,7 +45,7 @@ void Game::tugOfWar() {
          bool fired = player2.fire(this->cookie->gameRotation, this->cookie->gameMode, nullptr);
 
         #ifdef SOUNDS
-            if (fired) sound.tones(Sounds::Player_Fires_Bullet);
+            if (fired) playSoundEffect(SoundEffect::Laser);
         #endif
 
     }

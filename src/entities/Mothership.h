@@ -396,6 +396,7 @@ struct Mothership {
 
         int16_t getPosDisplay() { 
 
+//printf("this->pos %i, %i\n", this->pos, this->pos / 100);
             return this->pos / 100; 
 
         }

@@ -7,7 +7,6 @@
 using PC = Pokitto::Core;
 using PD = Pokitto::Display;
 
-
 Game game;
 GameCookie cookie;
 

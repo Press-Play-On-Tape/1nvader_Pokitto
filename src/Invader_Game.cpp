@@ -16,6 +16,8 @@ void Game::game_Init() {
     player1.reset(0);
     player2.reset(1);
 
+    playTheme(Theme::Hover);
+
     switch (this->cookie->gameRotation) {
 
         case GameRotation::Portrait:
@@ -81,7 +83,7 @@ void Game::game() {
                 if (gamePlayVars.bombCounter == 0) {
 
                     #ifdef SOUNDS
-                        sound.tones(Sounds::Enemy_Drops_Bomb);
+                        playSoundEffect(SoundEffect::Drop_Bomb);
                     #endif
 
                     bomb.setActive(true);
@@ -106,7 +108,7 @@ void Game::game() {
                 bool fired = player1.fire(this->cookie->gameRotation, this->cookie->gameMode, (this->cookie->gameMode == GameMode::Double ? &player2 : nullptr));
 
                 #ifdef SOUNDS
-                    if (fired) sound.tones(Sounds::Player_Fires_Bullet);
+                    if (fired) playSoundEffect(SoundEffect::Laser);
                 #endif
 
             }
@@ -120,7 +122,7 @@ void Game::game() {
                 bool fired = player2.fire(this->cookie->gameRotation, this->cookie->gameMode, (this->cookie->gameMode == GameMode::Double ? &player1 : nullptr));
 
                 #ifdef SOUNDS
-                    if (fired) sound.tones(Sounds::Player_Fires_Bullet);
+                    if (fired) playSoundEffect(SoundEffect::Laser);
                 #endif
 
             }
@@ -398,7 +400,7 @@ void Game::game() {
 
         if (gamePlayVars.waveCounter == 8) {
             #ifdef SOUNDS
-                sound.tones(Sounds::Wave_Cleared);
+                playSoundEffect(SoundEffect::Level_Cleared);
             #endif
         }
 
@@ -665,7 +667,7 @@ void Game::moveBullet(Player &player) {
                 if (this->collide(bulletRect, mothershipRect)) {
 
                     #ifdef SOUNDS
-                        sound.tones(Sounds::Enemy_Explosion);
+                        playSoundEffect(SoundEffect::Mini_Explosion);
                     #endif
 
 
@@ -694,7 +696,7 @@ void Game::moveBullet(Player &player) {
                     if (this->collide(bulletRect, bombRect)) {
 
                         #ifdef SOUNDS
-                            sound.tones(Sounds::Bomb_Explosion);
+                            playSoundEffect(SoundEffect::Bomb_HitGround);
                         #endif
 
                         bomb.explode();
@@ -716,7 +718,7 @@ void Game::moveBullet(Player &player) {
                 if (this->collide(bulletRect, mothershipRect)) {
 
                     #ifdef SOUNDS
-                        sound.tones(Sounds::Enemy_Explosion);
+                        playSoundEffect(SoundEffect::Mini_Explosion);
                     #endif
 
                     launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipHeight / 2), mothership.getHeight() + (Constants::MothershipWidth / 2));
@@ -736,7 +738,7 @@ void Game::moveBullet(Player &player) {
                     if (this->collide(bulletRect, bombRect)) {
 
                         #ifdef SOUNDS
-                            sound.tones(Sounds::Bomb_Explosion);
+                            playSoundEffect(SoundEffect::Bomb_HitGround);
                         #endif
 
                         bomb.explode();
@@ -773,7 +775,7 @@ void Game::moveBomb() {
 
                     #ifdef SOUNDS
                         if (explode) {
-                            sound.tones(Sounds::Player_Hit_By_Bomb);
+                            playSoundEffect(SoundEffect::Player_Hit);
                         }
                     #endif
                 }
@@ -788,7 +790,7 @@ void Game::moveBomb() {
 
                         #ifdef SOUNDS
                             if (explode) {
-                                sound.tones(Sounds::Player_Hit_By_Bomb);
+                                playSoundEffect(SoundEffect::Player_Hit);
                             }
                         #endif
 
@@ -811,7 +813,7 @@ void Game::moveBomb() {
 
                     #ifdef SOUNDS
                         if (explode) {
-                            sound.tones(Sounds::Player_Hit_By_Bomb);
+                            playSoundEffect(SoundEffect::Player_Hit);
                         }
                     #endif
 
@@ -827,7 +829,7 @@ void Game::moveBomb() {
 
                         #ifdef SOUNDS
                             if (explode) {
-                                sound.tones(Sounds::Player_Hit_By_Bomb);
+                                playSoundEffect(SoundEffect::Player_Hit);
                             }
                         #endif
 

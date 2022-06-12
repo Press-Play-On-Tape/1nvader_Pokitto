@@ -2,15 +2,11 @@
 
 namespace Sounds {
 
-    #include "Tone_00.h"
-    #include "Tone_01.h"
-    #include "Tone_02.h"
-    #include "Tone_03.h"
-    #include "Tone_04.h"
-    #include "Tone_05.h"
-    #include "Tone_06.h"
-    #include "Tone_07.h"
-    #include "Tone_08.h"
-    #include "Tone_09.h"
+    #include "Drop_Bomb.h"
+    #include "Laser.h"
+    #include "Mini_Explosion.h"
+    #include "Level_Cleared.h"
+    #include "Bomb_HitGround.h"
+    #include "Player_Hit.h"
 
 };
