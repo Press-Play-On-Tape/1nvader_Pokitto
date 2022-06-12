@@ -113,6 +113,44 @@ void Game::title() {
 
             }
 
+            if (PC::buttons.pressed(BTN_UP)) { 
+
+                this->cookie->sfx--;
+                this->cookie->saveCookie();
+                this->titleScreenVars.soundCounter = 64;
+
+                if (this->cookie->sfx != SoundEffects::Both && this->cookie->sfx != SoundEffects::Music) {
+
+                    this->muteTheme();
+                    
+                }
+                else {
+
+                    //this->playTheme();
+
+                }
+
+            }
+
+            if (PC::buttons.pressed(BTN_DOWN)) { 
+
+                this->cookie->sfx++;
+                this->cookie->saveCookie();
+                this->titleScreenVars.soundCounter = 64;
+
+                if (this->cookie->sfx != SoundEffects::Both && this->cookie->sfx != SoundEffects::Music) {
+
+                    this->muteTheme();
+                    
+                }
+                else {
+
+                    //this->playTheme();
+
+                }
+
+            }
+
             break;
 
         case GameRotation::Landscape:
@@ -180,6 +218,44 @@ void Game::title() {
 
             }
 
+            if (PC::buttons.pressed(BTN_LEFT)) { 
+
+                this->cookie->sfx--;
+                this->cookie->saveCookie();
+                this->titleScreenVars.soundCounter = 64;
+
+                if (this->cookie->sfx != SoundEffects::Both && this->cookie->sfx != SoundEffects::Music) {
+
+                    this->muteTheme();
+                    
+                }
+                else {
+
+                    //this->playTheme();
+
+                }
+
+            }
+
+            if (PC::buttons.pressed(BTN_RIGHT)) { 
+
+                this->cookie->sfx++;
+                this->cookie->saveCookie();
+                this->titleScreenVars.soundCounter = 64;
+
+                if (this->cookie->sfx != SoundEffects::Both && this->cookie->sfx != SoundEffects::Music) {
+
+                    this->muteTheme();
+                    
+                }
+                else {
+
+                    //this->playTheme();
+
+                }
+
+            }
+
             if (PC::buttons.pressed(BTN_A) && titleScreenVars.counter == 0) { 
 
                 titleScreenVars.counter = -1;
@@ -200,8 +276,6 @@ void Game::renderPlayerSelection(bool renderPlayerSelection) {
 
         case GameRotation::Portrait:
 
-            PD::drawBitmap(28, 32, Images::Portrait::Rotate);
-
             if (!renderPlayerSelection) return;
 
             PD::drawBitmap(54 - (static_cast<uint8_t>(this->cookie->gameMode) * 8), 17, Images::Portrait::DownArrow[frame]);
@@ -212,11 +286,41 @@ void Game::renderPlayerSelection(bool renderPlayerSelection) {
             if (this->cookie->getLevel(0) == 0) PD::drawBitmap(46, 17, Images::Portrait::Lock);
             if (this->cookie->getLevel(1) == 0) PD::drawBitmap(38, 17, Images::Portrait::Lock);
 
+            if (this->titleScreenVars.soundCounter == 0) {
+
+                PD::drawBitmap(28, 32, Images::Portrait::Rotate);
+
+            }
+            else {
+
+                switch (this->cookie->sfx) {
+
+                    case SoundEffects::Both:
+                        PD::drawBitmap(27, 36, Images::Portrait::Sound_Both_White);
+                        break;
+
+                    case SoundEffects::None:
+                        PD::drawBitmap(27, 36, Images::Portrait::Sound_None_White);
+                        break;
+
+                    case SoundEffects::SFX:
+                        PD::drawBitmap(27, 36, Images::Portrait::Sound_SFX_White);
+                        break;
+
+                    case SoundEffects::Music:
+                        PD::drawBitmap(27, 36, Images::Portrait::Sound_Music_White);
+                        break;
+
+                    
+                }
+                
+                this->titleScreenVars.soundCounter--;
+
+            }
+
             break;
 
         case GameRotation::Landscape:
-
-            PD::drawBitmap(80, 53, Images::Landscape::Rotate);
 
             if (!renderPlayerSelection) return;
 
@@ -227,6 +331,39 @@ void Game::renderPlayerSelection(bool renderPlayerSelection) {
 
             if (this->cookie->getLevel(0) == 0) PD::drawBitmap(71, 21, Images::Landscape::Lock);
             if (this->cookie->getLevel(1) == 0) PD::drawBitmap(71, 30, Images::Landscape::Lock);
+
+            if (this->titleScreenVars.soundCounter == 0) {
+
+                PD::drawBitmap(80, 53, Images::Landscape::Rotate);
+
+            }
+            else {
+
+                switch (this->cookie->sfx) {
+
+                    case SoundEffects::Both:
+                        PD::drawBitmap(82, 53, Images::Landscape::Sound_Both_White);
+                        break;
+
+                    case SoundEffects::None:
+                        PD::drawBitmap(82, 53, Images::Landscape::Sound_None_White);
+                        break;
+
+                    case SoundEffects::SFX:
+                        PD::drawBitmap(82, 53, Images::Landscape::Sound_SFX_White);
+                        break;
+
+                    case SoundEffects::Music:
+                        PD::drawBitmap(82, 53, Images::Landscape::Sound_Music_White);
+                        break;
+
+                    
+                }
+                
+                this->titleScreenVars.soundCounter--;
+
+            }
+
 
             break;
             

@@ -32,6 +32,7 @@ struct TitleScreenVars {
 
     int16_t counter = 0;
     uint8_t levels = 0;
+    uint16_t soundCounter = 0;
 
     void reset(GameRotation gameRotation) {
         
