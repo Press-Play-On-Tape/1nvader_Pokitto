@@ -36,22 +36,6 @@ namespace Images {
 
         }
 
-        namespace SIZE_4X4 {
-
-            #include "mothership/portrait/4x4/MotherShip_Title_00.h"
-            #include "mothership/portrait/4x4/MotherShip_Title_01.h"
-            #include "mothership/portrait/4x4/MotherShip_Title_02.h"
-            #include "mothership/portrait/4x4/MotherShip_Title_03.h"
-
-            const uint8_t * const Mothership_Title[] = { 
-                MotherShip_Title_00,
-                MotherShip_Title_01,
-                MotherShip_Title_02,
-                MotherShip_Title_03,
-            };
-
-        }
-
         namespace SIZE_3X3 {
 
             #include "mothership/portrait/3x3/MotherShip_Title_00.h"
@@ -101,22 +85,6 @@ namespace Images {
             MotherShip_02,
             MotherShip_03,
         };
-
-        namespace SIZE_4X4 {
-
-            #include "mothership/landscape/4x4/MotherShip_Title_00.h"
-            #include "mothership/landscape/4x4/MotherShip_Title_01.h"
-            #include "mothership/landscape/4x4/MotherShip_Title_02.h"
-            #include "mothership/landscape/4x4/MotherShip_Title_03.h"
-
-            const uint8_t * const Mothership_Title[] = { 
-                MotherShip_Title_00,
-                MotherShip_Title_01,
-                MotherShip_Title_02,
-                MotherShip_Title_03,
-            };
-
-        }
 
         namespace SIZE_3X3 {
 
