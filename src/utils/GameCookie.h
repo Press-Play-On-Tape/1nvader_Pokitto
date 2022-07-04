@@ -29,8 +29,8 @@ class GameCookie : public Pokitto::Cookie {
 			this->highScore[2] = 0;
 			this->gameMode = GameMode::Single;
 			this->gameRotation = GameRotation::Landscape;
-			this->levelLock[0] = 1;	//SJH
-			this->levelLock[1] = 1;	//SJH
+			this->levelLock[0] = 0;	//SJH
+			this->levelLock[1] = 0;	//SJH
 			this->levelLock[2] = 0;
 
 			this->saveCookie();

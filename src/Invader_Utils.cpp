@@ -10,16 +10,33 @@ void Game::playTheme(Theme theme) {
 
     #ifdef SOUNDS
 
-    constexpr char themes[2][19] = { "music/1nvad_00.raw", "music/1nvad_01.raw" };
+    constexpr char themes[3][19] = { "music/1nvad_00.raw", "music/1nvad_01.raw", "music/1nvad_02.raw" };
 
     switch (this->cookie->sfx) {
 
         case SoundEffects::Music:
         case SoundEffects::Both:
 
-            if (this->mainThemeFile.openRO(themes[static_cast<uint8_t>(theme)])) {
-                auto& music = Audio::play<0>(this->mainThemeFile);
-                music.setLoop(true);
+            switch (theme) {
+
+                case Theme::Game_Over:
+
+                    if (this->mainThemeFile.openRO(themes[static_cast<uint8_t>(theme)])) {
+                        auto& music = Audio::play<0>(this->mainThemeFile);
+                        music.setLoop(false);
+                    }
+
+                    break;
+
+                case Theme::Hover:
+                case Theme::Main:
+
+                    if (this->mainThemeFile.openRO(themes[static_cast<uint8_t>(theme)])) {
+                        auto& music = Audio::play<0>(this->mainThemeFile);
+                        music.setLoop(true);
+                    }
+
+                    break;
             }
 
             break;

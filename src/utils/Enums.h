@@ -14,6 +14,7 @@ enum class SoundEffects : uint8_t {
 enum class Theme : uint8_t {
     Game_Over,
     Hover,
+    Main
 };
 
 inline SoundEffects &operator++(SoundEffects &c ) {

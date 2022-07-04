@@ -15,7 +15,7 @@ void Game::title_Init() {
     titleScreenVars.reset(this->cookie->gameRotation);
 
     #ifdef SOUNDS
-        //playTheme();
+        playTheme(Theme::Main);
     #endif
 
     titleScreenVars.levels = 0;
@@ -126,7 +126,7 @@ void Game::title() {
                 }
                 else {
 
-                    //this->playTheme();
+                    this->playTheme(Theme::Main);
 
                 }
 
@@ -145,7 +145,7 @@ void Game::title() {
                 }
                 else {
 
-                    //this->playTheme();
+                    this->playTheme(Theme::Main);
 
                 }
 
