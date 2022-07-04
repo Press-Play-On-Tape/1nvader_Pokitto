@@ -98,6 +98,7 @@ void Game::game() {
 
         }
 
+
         // Handle movements ..
 
         if (!player1.getBeingPushed()) {
@@ -220,6 +221,7 @@ void Game::game() {
     renderScores(false, false);
     renderScenery(this->cookie->gameMode, false);
     updateAndRenderParticles(this->cookie->gameRotation);
+    renderStars(this->cookie->gameMode, this->cookie->gameRotation);
 
     uint8_t frame = (PC::frameCount % 36) / 6;
 
@@ -227,7 +229,11 @@ void Game::game() {
 
         case GameRotation::Portrait:
 
-            PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player);
+            #ifdef NEW_GRAPHICS
+                PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player_New);
+            #else
+                PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player);
+            #endif
 
             if (player1.getExplosionCounter() > 0) {
 
@@ -237,7 +243,11 @@ void Game::game() {
 
             if (this->cookie->gameMode == GameMode::Double) {
 
-                PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player);
+                #ifdef NEW_GRAPHICS
+                    PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player_New);
+                #else
+                    PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player);
+                #endif
 
                 if (player2.getExplosionCounter() > 0) {
 
@@ -308,7 +318,11 @@ void Game::game() {
 
         case GameRotation::Landscape:
 
-            PD::drawBitmap(player1.getPos(), 80, Images::Landscape::Player);
+            #ifdef NEW_GRAPHICS
+                PD::drawBitmap(player1.getPos(), 80, Images::Landscape::Player_New);
+            #else
+                PD::drawBitmap(player1.getPos(), 80, Images::Landscape::Player);
+            #endif
 
             if (player1.getExplosionCounter() > 0) {
 
@@ -318,7 +332,11 @@ void Game::game() {
 
             if (this->cookie->gameMode == GameMode::Double) {
 
-                PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player); 
+                #ifdef NEW_GRAPHICS
+                    PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player_New);
+                #else
+                    PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player);
+                #endif
 
                 if (player2.getExplosionCounter() > 0) {
 

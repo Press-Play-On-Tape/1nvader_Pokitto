@@ -279,9 +279,9 @@ void Game::renderPlayerSelection(bool renderPlayerSelection) {
             if (!renderPlayerSelection) return;
 
             PD::drawBitmap(54 - (static_cast<uint8_t>(this->cookie->gameMode) * 8), 17, Images::Portrait::DownArrow[frame]);
-            PD::drawBitmap(54, 25, Images::Portrait::SurvivalMode);
-            PD::drawBitmap(46, 25, Images::Portrait::VSMode);
-            PD::drawBitmap(38, 25, Images::Portrait::TugOfWarMode);
+            PD::drawBitmap(54, 25, this->cookie->gameMode == GameMode::Single ? Images::Portrait::SurvivalMode : Images::Portrait::SurvivalMode_Grey);
+            PD::drawBitmap(46, 25, this->cookie->gameMode == GameMode::Double ? Images::Portrait::VSMode : Images::Portrait::VSMode_Grey);
+            PD::drawBitmap(38, 25, this->cookie->gameMode == GameMode::TugOfWar ? Images::Portrait::TugOfWarMode : Images::Portrait::TugOfWarMode_Grey);
 
             if (this->cookie->getLevel(0) == 0) PD::drawBitmap(46, 17, Images::Portrait::Lock);
             if (this->cookie->getLevel(1) == 0) PD::drawBitmap(38, 17, Images::Portrait::Lock);
@@ -325,9 +325,9 @@ void Game::renderPlayerSelection(bool renderPlayerSelection) {
             if (!renderPlayerSelection) return;
 
             PD::drawBitmap(56, 12 + (static_cast<uint8_t>(this->cookie->gameMode) * 9), Images::Landscape::LeftArrow[frame]);
-            PD::drawBitmap(64, 12, Images::Landscape::SurvivalMode);
-            PD::drawBitmap(64, 21, Images::Landscape::VSMode);
-            PD::drawBitmap(64, 30, Images::Landscape::TugOfWarMode);
+            PD::drawBitmap(64, 12, this->cookie->gameMode == GameMode::Single ? Images::Landscape::SurvivalMode : Images::Landscape::SurvivalMode_Grey);
+            PD::drawBitmap(64, 21, this->cookie->gameMode == GameMode::Double ? Images::Landscape::VSMode : Images::Landscape::VSMode_Grey);
+            PD::drawBitmap(64, 30, this->cookie->gameMode == GameMode::TugOfWar ? Images::Landscape::TugOfWarMode : Images::Landscape::TugOfWarMode_Grey);
 
             if (this->cookie->getLevel(0) == 0) PD::drawBitmap(71, 21, Images::Landscape::Lock);
             if (this->cookie->getLevel(1) == 0) PD::drawBitmap(71, 30, Images::Landscape::Lock);

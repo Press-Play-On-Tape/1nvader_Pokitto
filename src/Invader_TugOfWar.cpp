@@ -89,7 +89,11 @@ void Game::tugOfWar() {
     renderScoreTugOfWar(player1.getScore(), player2.getScore());
     updateAndRenderParticles(GameRotation::Landscape);
 
-    PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player);
+    #ifdef NEW_GRAPHICS
+        PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player_New);
+    #else
+        PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player);
+    #endif
 
     if (player1.getExplosionCounter() > 0) {
 
@@ -97,7 +101,11 @@ void Game::tugOfWar() {
 
     }
 
-    PD::drawBitmap(102, player2.getPos(), Images::Portrait::Rotated::Player);
+    #ifdef NEW_GRAPHICS
+        PD::drawBitmap(102, player2.getPos(), Images::Portrait::Rotated::Player_New);
+    #else
+        PD::drawBitmap(102, player2.getPos(), Images::Portrait::Rotated::Player);
+    #endif
 
     if (player2.getExplosionCounter() > 0) {
 

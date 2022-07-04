@@ -79,6 +79,8 @@ class Game {
         void renderScenery(GameMode gameMode, bool hideCentreline);
         void renderHighScore(GameMode gameMode, bool centre);
         void renderInvaderSign();
+        void renderStars(GameMode gameMode, GameRotation gameRotation);
         bool collide(Rect rect1, Rect rect2);
+        
 };
 

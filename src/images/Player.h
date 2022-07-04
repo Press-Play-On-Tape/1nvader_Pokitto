@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../utils/Enums.h"
+
 namespace Images {
 
     namespace Portrait {
@@ -9,7 +11,12 @@ namespace Images {
             #include "player/portrait/normal/Player_Explosion_00.h"
             #include "player/portrait/normal/Player_Explosion_01.h"
             #include "player/portrait/normal/Player_Explosion_02.h"
-            #include "player/portrait/normal/Player.h"
+    
+            #ifdef NEW_GRAPHICS
+                #include "player/portrait/normal/Player_New.h"
+            #else
+                #include "player/portrait/normal/Player.h"
+            #endif
 
             const uint8_t * const Player_Explosion[] = { 
                 Player_Explosion_00,
@@ -24,7 +31,12 @@ namespace Images {
             #include "player/portrait/rotated/Player_Explosion_00.h"
             #include "player/portrait/rotated/Player_Explosion_01.h"
             #include "player/portrait/rotated/Player_Explosion_02.h"
-            #include "player/portrait/rotated/Player.h"
+    
+            #ifdef NEW_GRAPHICS
+                #include "player/portrait/rotated/Player_New.h"
+            #else
+                #include "player/portrait/rotated/Player.h"
+            #endif
 
             const uint8_t * const Player_Explosion[] = { 
                 Player_Explosion_00,
@@ -43,7 +55,12 @@ namespace Images {
         #include "player/landscape/Player_Explosion_00.h"
         #include "player/landscape/Player_Explosion_01.h"
         #include "player/landscape/Player_Explosion_02.h"
-        #include "player/landscape/Player.h"
+
+        #ifdef NEW_GRAPHICS
+            #include "player/landscape/Player_New.h"
+        #else
+            #include "player/landscape/Player.h"
+        #endif
 
         const uint8_t * const Player_Explosion[] = { 
             Player_Explosion_00,

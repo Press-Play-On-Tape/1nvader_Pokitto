@@ -247,18 +247,28 @@ void Game::renderSceneryPortrait() {
 
     }
 
-    for (int8_t y = -2; y < Constants::ScreenHeight; y+=16) {
+    #ifdef NEW_GRAPHICS
 
-        PD::drawBitmap(17, y, Images::Portrait::Mountain_TOP);
+        PD::drawBitmap(0, 0, Images::Portrait::Mountain_BOT_New);
 
-    }
+    #else
 
+        PD::setColor(4);
+        PD::fillRect(0, 0, 17, 88);
 
-    for (int8_t y = 0; y < Constants::ScreenHeight; y+=8) {
-    
-        PD::drawBitmap(0, y, Images::Portrait::Ground_BOT);
+        for (int8_t y = -2; y < Constants::ScreenHeight; y+=16) {
 
-    }
+            PD::drawBitmap(17, y, Images::Portrait::Mountain_Bot);
+
+        }
+
+        for (int8_t y = 0; y < Constants::ScreenHeight; y+=8) {
+        
+            PD::drawBitmap(0, y, Images::Portrait::Ground_Bot);
+
+        }
+
+    #endif
 
 }
 
@@ -274,17 +284,28 @@ void Game::renderScenery(GameMode gameMode, bool hideCentreline) {
 
                     renderSceneryPortrait();
 
-                    for (int8_t y = -2; y < Constants::ScreenHeight; y+=16) {
+                    #ifdef NEW_GRAPHICS
 
-                        PD::drawBitmap(85, y, Images::Portrait::Mountain_BOT);
+                        PD::drawBitmap(77, 0, Images::Portrait::Mountain_TOP_New);
 
-                    }
+                    #else
 
-                    for (int8_t y = 0; y < Constants::ScreenHeight; y+=8) {
+                        PD::setColor(4);
+                        PD::fillRect(85 + 8, 0, 110 - 85 - 8, 88);
 
-                        PD::drawBitmap(107, y, Images::Portrait::Ground_TOP);
+                        for (int8_t y = -2; y < Constants::ScreenHeight; y+=16) {
 
-                    }
+                            PD::drawBitmap(85, y, Images::Portrait::Mountain_TOP);
+
+                        }
+
+                        for (int8_t y = 0; y < Constants::ScreenHeight; y+=8) {
+
+                            PD::drawBitmap(107, y, Images::Portrait::Ground_TOP);
+
+                        }
+
+                    #endif
 
                     if (!hideCentreline) {
 
@@ -325,17 +346,26 @@ void Game::renderScenery(GameMode gameMode, bool hideCentreline) {
 
             }
 
-            for (int16_t x = -2; x < Constants::ScreenWidth; x+=16) {
+            #ifdef NEW_GRAPHICS
+                
+                PD::drawBitmap(0, 55, Images::Landscape::Mountain_New);
 
-                PD::drawBitmap(x, 66, Images::Landscape::Mountain);
+            #else
 
-            }
+                for (int16_t x = -2; x < Constants::ScreenWidth; x+=16) {
 
-            for (uint8_t x = 0; x < Constants::ScreenWidth; x+=8) {
+                    PD::drawBitmap(x, 66, Images::Landscape::Mountain);
 
-                PD::drawBitmap(x, 85, Images::Landscape::Ground);
+                }
 
-            }
+
+                for (uint8_t x = 0; x < Constants::ScreenWidth; x+=8) {
+
+                    PD::drawBitmap(x, 85, Images::Landscape::Ground);
+
+                }
+
+            #endif
 
             break;
 
@@ -411,3 +441,50 @@ bool Game::collide(Rect rect1, Rect rect2) {
             rect2.y + rect2.height <= rect1.y);
 
  }
+
+void Game::renderStars(GameMode gameMode, GameRotation gameRotation) {
+
+    uint8_t stars_X_Landscape[] = { 2,  7, 14, 20, 24, 35, 42, 48, 60, 64, 70, 78, 85, 88, 90, 98, 102, 108 };
+    uint8_t stars_Y_Landscape[] = { 8, 12, 38, 23, 14, 32, 26,  8, 23, 18, 40, 22, 16, 37, 23,  8,   20, 40 };
+
+    uint8_t stars_X_Potrait[] = { 2,  7, 14, 20, 24, 35, 42, 48, 60, 64, 70, 78, 85, 88, 16, 44, 58, 78 };
+    uint8_t stars_Y_Potrait[] = { 8, 12, 38, 23, 14, 32, 26,  8, 23, 18, 40, 22, 16, 37, 50, 56, 60, 58 };
+
+    switch (gameMode) {
+
+        case GameMode::Single:
+        case GameMode::Double:
+
+            switch (gameRotation) {
+
+                case GameRotation::Landscape:
+
+                    for (uint8_t i = 0; i < 18; i++) {
+
+                        PD::setColor(5 + random(0, 2));
+                        PD::drawPixel(stars_X_Landscape[i], stars_Y_Landscape[i]);
+
+                    }
+
+                    break;
+
+                case GameRotation::Portrait:
+
+                    for (uint8_t i = 0; i < 18; i++) {
+
+                        PD::setColor(5 + random(0, 2));
+                        PD::drawPixel(110 - stars_Y_Potrait[i], stars_X_Potrait[i]);
+
+                    }
+
+                    break;
+
+            }
+
+        default:
+            break;
+
+    }
+
+
+}

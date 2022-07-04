@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../utils/Enums.h"
+
 namespace Images {
     
     namespace Landscape {
@@ -7,6 +9,10 @@ namespace Images {
         #include "title/landscape/SurvivalMode.h"
         #include "title/landscape/TugOfWarMode.h"
         #include "title/landscape/VSMode.h"
+        #include "title/landscape/SurvivalMode_Grey.h"
+        #include "title/landscape/TugOfWarMode_Grey.h"
+        #include "title/landscape/VSMode_Grey.h"
+
         #include "title/landscape/Ground.h"
         #include "title/landscape/HighScore.h"
         #include "title/landscape/Invader.h"
@@ -14,7 +20,13 @@ namespace Images {
         #include "title/landscape/LeftArrow_01.h"
         #include "title/landscape/LeftArrow_02.h"
         #include "title/landscape/Lock.h"
-        #include "title/landscape/Mountain.h"
+
+        #ifdef NEW_GRAPHICS
+            #include "title/landscape/Mountain_New.h"
+        #else
+            #include "title/landscape/Mountain.h"
+        #endif
+
         #include "title/landscape/Rotate.h"
         #include "title/landscape/WaveCleared_00.h"
         #include "title/landscape/WaveCleared_01.h"
@@ -47,6 +59,11 @@ namespace Images {
         #include "title/portrait/SurvivalMode.h"
         #include "title/portrait/TugOfWarMode.h"
         #include "title/portrait/VSMode.h"
+
+        #include "title/portrait/SurvivalMode_Grey.h"
+        #include "title/portrait/TugOfWarMode_Grey.h"
+        #include "title/portrait/VSMode_Grey.h"
+
         #include "title/portrait/Ground_Bot.h"
         #include "title/portrait/Ground_Top.h"
         #include "title/portrait/HighScore.h"
@@ -55,8 +72,6 @@ namespace Images {
         #include "title/portrait/DownArrow_01.h"
         #include "title/portrait/DownArrow_02.h"
         #include "title/portrait/Lock.h"
-        #include "title/portrait/Mountain_Top.h"
-        #include "title/portrait/Mountain_Bot.h"
         #include "title/portrait/Rotate.h"
         #include "title/portrait/WaveCleared_00.h"
         #include "title/portrait/WaveCleared_01.h"
@@ -65,6 +80,19 @@ namespace Images {
         #include "title/portrait/WaveCleared_04.h"
         #include "title/portrait/WaveCleared_05.h"
         #include "title/portrait/WaveCleared_06.h"
+
+        #ifdef NEW_GRAPHICS
+
+            #include "title/portrait/Mountain_Top_New.h"
+            #include "title/portrait/Mountain_Bot_New.h"
+
+        #else
+
+            #include "title/portrait/Mountain_Top.h"
+            #include "title/portrait/Mountain_Bot.h"
+
+        #endif
+
 
         const uint8_t * const DownArrow[] = { 
             DownArrow_00,
