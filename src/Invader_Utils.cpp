@@ -303,7 +303,7 @@ void Game::renderScenery(GameMode gameMode, bool hideCentreline) {
 
                     #ifdef NEW_GRAPHICS
 
-                        PD::drawBitmap(77, 0, Images::Portrait::Mountain_TOP_New);
+                        PD::drawBitmap(72, 0, Images::Portrait::Mountain_TOP_New);
 
                     #else
 
@@ -326,6 +326,7 @@ void Game::renderScenery(GameMode gameMode, bool hideCentreline) {
 
                     if (!hideCentreline) {
 
+                        PD::setColor(5);
                         for (uint8_t y = 1; y < Constants::ScreenHeight; y = y + 4) {
 
                             PD::drawFastVLine(Constants::ScreenWidth / 2, y, 2);
@@ -365,7 +366,7 @@ void Game::renderScenery(GameMode gameMode, bool hideCentreline) {
 
             #ifdef NEW_GRAPHICS
                 
-                PD::drawBitmap(0, 55, Images::Landscape::Mountain_New);
+                PD::drawBitmap(0, 50, Images::Landscape::Mountain_New);
 
             #else
 
@@ -443,7 +444,7 @@ void Game::renderInvaderSign() {
 
         case GameRotation::Landscape:
 
-            PD::drawBitmap(5, 31, Images::Landscape::Invader);
+            PD::drawBitmap(4, 37, Images::Landscape::Invader);
             break;
     
     }

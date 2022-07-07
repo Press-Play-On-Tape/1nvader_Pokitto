@@ -10,8 +10,8 @@ void Game::game_Init() {
 
     gameState = GameState::Game;
 
-    mothership.reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight);
-    gamePlayVars.bombCounter = random(256, 1024);
+    mothership.reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single);
+    gamePlayVars.bombCounter = random(128, 256);
 
     player1.reset(0);
     player2.reset(1);
@@ -66,19 +66,27 @@ void Game::game_Init() {
 
     }            
 
+
+    player1.setScore(300);
+
 }   
 
 void Game::game() {
 
+
     // Randomly drop a bomb ?
 
-   if (!gamePlayVars.waveCleared) {
+    if (!gamePlayVars.waveCleared) {
 
-        if (player1.getScore() + player2.getScore() > 20) {
+        if (player1.getScore() + player2.getScore() >= Constants::Score_DropBomb) {
 
-            if ((this->cookie->gameRotation == GameRotation::Landscape && mothership.getHeight() < 30) || (this->cookie->gameRotation == GameRotation::Portrait && mothership.getHeight() > 56)) {
+            if ((this->cookie->gameRotation == GameRotation::Landscape && mothership.getHeight() <= 32) || (this->cookie->gameRotation == GameRotation::Portrait && mothership.getHeight() >= 38)) {
 
-                gamePlayVars.bombCounter--;
+                if ((this->cookie->gameRotation == GameRotation::Landscape && mothership.getPosDisplay() > -10 && mothership.getPosDisplay() < 93) || (this->cookie->gameRotation == GameRotation::Portrait && mothership.getPosDisplay() > -4 && mothership.getPosDisplay() < 76)) {
+
+                    gamePlayVars.bombCounter--;
+
+                }
 
                 if (gamePlayVars.bombCounter == 0) {
 
@@ -87,15 +95,65 @@ void Game::game() {
                     #endif
 
                     bomb.setActive(true);
-                    bomb.setPos(mothership.getPosDisplay() + 6);
+
+                    #ifdef NEW_GRAPHICS
+                        bomb.setPos(mothership.getPosDisplay() + 10);
+                    #else
+                        bomb.setPos(mothership.getPosDisplay() + 6);
+                    #endif
+
                     bomb.setHeight(mothership.getHeight() + 6);
 
-                    gamePlayVars.bombCounter = random(256, 1024);
+                    gamePlayVars.bombCounter = random(128, 256);
 
                 }
 
             }
 
+        }
+
+
+        // Enemy change directions?
+
+        if (mothership.getCanTurn() && player1.getScore() + player2.getScore() >= Constants::Score_ChangeDirection) {
+
+            uint8_t randMax = (player1.getScore() + player2.getScore()) / 16;
+            if (randMax < 20) randMax = 20;
+
+            switch (this->cookie->getRotation()) {
+
+                case GameRotation::Landscape:
+
+                    if (((mothership.getMovement() == Movement::Left && mothership.getPosDisplay() > 15 && mothership.getPosDisplay() < 40) ||
+                         (mothership.getMovement() == Movement::Right && mothership.getPosDisplay() > 30 && mothership.getPosDisplay() < 55)) &&
+                          mothership.getHeight() <= 32) {
+
+                        if (random(0, 50 - randMax) == 0) {
+                            mothership.swapMovement();
+                        }
+
+                    }
+
+                    break;
+
+
+                case GameRotation::Portrait:
+
+                    if (((mothership.getMovement() == Movement::Left && mothership.getPosDisplay() > 30) ||
+                         (mothership.getMovement() == Movement::Right && mothership.getPosDisplay() < 60)) &&
+                          mothership.getHeight() >= 38) {
+
+                        if (random(0, 50 - randMax) == 0) {
+                            mothership.swapMovement();
+                        }
+
+                    }
+
+                    break;
+
+            
+            }
+            
         }
 
 
@@ -223,7 +281,11 @@ void Game::game() {
     updateAndRenderParticles(this->cookie->gameRotation);
     renderStars(this->cookie->gameMode, this->cookie->gameRotation);
 
-    uint8_t frame = (PC::frameCount % 36) / 6;
+    #ifdef NEW_GRAPHICS
+        uint8_t frame = ((PC::frameCount % 12) < 6 ? 0 : 1) + (this->mothership.getEnemyFrame() == EnemyType::Double ? 2 : 0);
+    #else
+        uint8_t frame = (PC::frameCount % 36) / 6;
+    #endif
 
     switch (this->cookie->gameRotation) {
 
@@ -244,7 +306,7 @@ void Game::game() {
             if (this->cookie->gameMode == GameMode::Double) {
 
                 #ifdef NEW_GRAPHICS
-                    PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player_New);
+                    PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player2_New);
                 #else
                     PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player);
                 #endif
@@ -257,19 +319,100 @@ void Game::game() {
 
             }
 
-            switch (mothership.getExplosionCounter()) {
 
-                case 0:
-                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
+            // Render mothership ..
+
+            switch (mothership.getEnemyType()) {
+
+                case EnemyType::Single:
+
+                    switch (mothership.getExplosionCounter()) {
+
+                        case 0:
+                            #ifdef NEW_GRAPHICS
+                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
+                            #else
+                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
+                            #endif
+                            break;
+
+                        case 1 ... Constants::MothershipExplosionMax / 2:
+                            PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
+                            break;
+
+                        case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
+                            #ifdef NEW_GRAPHICS
+                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
+                            #else
+                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
+                            #endif
+                            PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
+                            break;
+
+                    }
+
                     break;
 
-                case 1 ... Constants::MothershipExplosionMax / 2:
-                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
-                    break;
+                case EnemyType::Double:
 
-                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
-                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
-                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
+                    switch (mothership.getEnemyFrame()) {
+
+                        case EnemyType::Single:
+
+                            #ifdef NEW_GRAPHICS
+                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
+                            #else
+                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
+                            #endif
+
+                            switch (mothership.getExplosionCounter()) {
+
+                                case 0:
+                                    break;
+
+                                case 1 ... Constants::MothershipExplosionMax / 2:
+                                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
+                                    break;
+
+                                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
+                                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
+                                    break;
+
+                            }
+
+                            break;
+
+                        case EnemyType::Double:
+
+                            switch (mothership.getExplosionCounter()) {
+
+                                case 0:
+                                    #ifdef NEW_GRAPHICS
+                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
+                                    #else
+                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
+                                    #endif
+                                    break;
+
+                                case 1 ... Constants::MothershipExplosionMax / 2:
+                                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
+                                    break;
+
+                                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
+                                    #ifdef NEW_GRAPHICS
+                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
+                                    #else
+                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
+                                    #endif
+                                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
+                                    break;
+
+                            }
+
+                            break;
+
+                    }
+
                     break;
 
             }
@@ -313,7 +456,8 @@ void Game::game() {
 
                 }
 
-            }    
+            }  
+
             break;
 
         case GameRotation::Landscape:
@@ -333,7 +477,7 @@ void Game::game() {
             if (this->cookie->gameMode == GameMode::Double) {
 
                 #ifdef NEW_GRAPHICS
-                    PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player_New);
+                    PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player2_New);
                 #else
                     PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player);
                 #endif
@@ -346,20 +490,98 @@ void Game::game() {
 
             }
 
-            switch (mothership.getExplosionCounter()) {
+            // Render mothership ..
 
-                case 0:
-                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
+            switch (mothership.getEnemyType()) {
+
+                case EnemyType::Single:
+                        
+                    switch (mothership.getExplosionCounter()) {
+
+                        case 0:
+                            #ifdef NEW_GRAPHICS
+                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
+                            #else
+                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
+                            #endif
+                            break;
+
+                        case 1 ... Constants::MothershipExplosionMax / 2:
+                            PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[1]);
+                            break;
+
+                        case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
+                            #ifdef NEW_GRAPHICS
+                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
+                            #else
+                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
+                            #endif
+                            PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[0]);
+                            break;
+
+                    }
+
                     break;
 
-                case 1 ... Constants::MothershipExplosionMax / 2:
-                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[1]);
-                    break;
+                case EnemyType::Double:
 
-                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
-                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
-                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[0]);
-                    break;
+                    switch (mothership.getEnemyFrame()) {
+
+                        case EnemyType::Single:
+
+                            #ifdef NEW_GRAPHICS
+                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
+                            #else
+                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
+                            #endif
+                                
+                            switch (mothership.getExplosionCounter()) {
+
+                                case 0:
+                                    break;
+
+                                case 1 ... Constants::MothershipExplosionMax / 2:
+                                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[1]);
+                                    break;
+
+                                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
+                                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[0]);
+                                    break;
+
+                            }     
+
+                            break;
+
+                        case EnemyType::Double:
+
+                            switch (mothership.getExplosionCounter()) {
+
+                                case 0:
+                                    #ifdef NEW_GRAPHICS
+                                        PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
+                                    #else
+                                        PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
+                                    #endif
+                                    break;
+
+                                case 1 ... Constants::MothershipExplosionMax / 2:
+                                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[1]);
+                                    break;
+
+                                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
+                                    #ifdef NEW_GRAPHICS
+                                        PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
+                                    #else
+                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
+                                    #endif
+                                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[0]);
+                                    break;
+
+                            }
+
+                            break;
+
+                    }
 
             }
 
@@ -377,11 +599,11 @@ void Game::game() {
                 switch (bomb.getHeight()) {
 
                     case Constants::ScreenHeight - 4 ... Constants::ScreenHeight - 2:
-                        PD::drawBitmap(bomb.getPos() - 4, 58, Images::Landscape::Explosion[0]);
+                        PD::drawBitmap(bomb.getPos() - 4, 82, Images::Landscape::Explosion[0]);
                         break;
 
                     case Constants::ScreenHeight - 1 ... Constants::ScreenHeight:
-                        PD::drawBitmap(bomb.getPos() - 4, 58, Images::Landscape::Explosion[1]);
+                        PD::drawBitmap(bomb.getPos() - 4, 82, Images::Landscape::Explosion[1]);
                         break;
 
                 }        
@@ -680,7 +902,12 @@ void Game::moveBullet(Player &player) {
         case GameRotation::Portrait:
             {
                 Rect bulletRect = { player.getBulletX() + 1, player.getBulletY() +1, Constants::BulletHeight - 2, Constants::BulletWidth - 2 };
-                Rect mothershipRect = { mothership.getHeight() + 1, mothership.getPosDisplay() + 1, Constants::MothershipWidth - 2, Constants::MothershipHeight - 2 };
+
+                #ifdef NEW_GRAPHICS
+                    Rect mothershipRect = { mothership.getHeight() + 3, mothership.getPosDisplay() + 4, Constants::MothershipHeight - 4, Constants::MothershipWidth - 7 };
+                #else
+                    Rect mothershipRect = { mothership.getHeight() + 1, mothership.getPosDisplay() + 1, Constants::MothershipHeight - 2, Constants::MothershipWidth - 2 };
+                #endif
 
                 if (this->collide(bulletRect, mothershipRect)) {
 
@@ -688,9 +915,7 @@ void Game::moveBullet(Player &player) {
                         playSoundEffect(SoundEffect::Mini_Explosion);
                     #endif
 
-
-                    launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipHeight / 2), mothership.getHeight() + (Constants::MothershipWidth / 2));
-
+                    launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipWidth / 2), mothership.getHeight() + (Constants::MothershipHeight / 2));
 
                     if (this->cookie->gameMode == GameMode::TugOfWar) {
                         mothership.explode(player.getPlayerIdx() == 0 ? -Constants::TugOfWarRowAdjustment : Constants::TugOfWarRowAdjustment);
@@ -731,7 +956,12 @@ void Game::moveBullet(Player &player) {
         case GameRotation::Landscape:
             {        
                 Rect bulletRect = { player.getBulletX() + 1, player.getBulletY() + 1, Constants::BulletWidth - 2, Constants::BulletHeight - 2 };
-                Rect mothershipRect = { mothership.getPosDisplay() + 1, mothership.getHeight() + 1, Constants::MothershipWidth - 2, Constants::MothershipHeight - 2 };
+
+                #ifdef NEW_GRAPHICS
+                    Rect mothershipRect = { mothership.getPosDisplay() + 4, mothership.getHeight() + 1, Constants::MothershipWidth - 9, Constants::MothershipHeight - 4 };
+                #else
+                    Rect mothershipRect = { mothership.getPosDisplay() + 1, mothership.getHeight() + 1, Constants::MothershipWidth - 2, Constants::MothershipHeight - 2 };
+                #endif
 
                 if (this->collide(bulletRect, mothershipRect)) {
 
@@ -739,7 +969,7 @@ void Game::moveBullet(Player &player) {
                         playSoundEffect(SoundEffect::Mini_Explosion);
                     #endif
 
-                    launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipHeight / 2), mothership.getHeight() + (Constants::MothershipWidth / 2));
+                    launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipWidth / 2), mothership.getHeight() + (Constants::MothershipHeight / 2));
 
                     mothership.explode(-Constants::MothershipRowHeight);                    
                     gamePlayVars.waveCleared = mothership.decCounter();

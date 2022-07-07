@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Enums.h"
+
+
 // - Debug ------------------------------
 
 #define _DEBUG
@@ -7,8 +10,8 @@
 
 // ---------------------------------------
 
-#define MOTHERSHIP_SIZE_LANDSCAPE SIZE_3X3
-#define MOTHERSHIP_SIZE_PORTRAIT SIZE_3X3
+#define MOTHERSHIP_SIZE_LANDSCAPE SIZE_2X2
+#define MOTHERSHIP_SIZE_PORTRAIT SIZE_2X2
 
 namespace Constants {
 
@@ -33,6 +36,9 @@ namespace Constants {
     constexpr uint8_t BulletHeight = 7;
     constexpr uint8_t BulletWidth = 5;
 
+    constexpr uint8_t Score_DropBomb = 25;
+    constexpr uint8_t Score_ChangeDirection = 25;
+
     namespace Portrait {
         constexpr int8_t PlayerMinPos = -1;
         constexpr int8_t PlayerMaxPos = ScreenHeight - 11;//  53;
@@ -43,8 +49,14 @@ namespace Constants {
         constexpr int8_t PlayerMaxPos = ScreenWidth - 11;
     }
 
-    constexpr uint8_t MothershipHeight = 9;
-    constexpr uint8_t MothershipWidth = 14;
+    #ifdef NEW_GRAPHICS
+        constexpr uint8_t MothershipHeight = 16;
+        constexpr uint8_t MothershipWidth = 23;
+    #else
+        constexpr uint8_t MothershipHeight = 9;
+        constexpr uint8_t MothershipWidth = 14;
+    #endif
+    
     constexpr uint8_t MothershipCounterMax = 80;
     constexpr uint8_t MothershipExplosionMax = 8;
     constexpr uint8_t MothershipRowHeight = 8;
@@ -61,7 +73,10 @@ namespace Constants {
         constexpr int16_t MothershipStartHeight = 16;
     }
     
+    #ifndef NEW_GRAPHICS
     constexpr uint8_t Mothership_Frames[] = { 0, 1, 2, 3, 2, 1 };
+    #endif
+
     constexpr uint8_t Arrow_Frames[] = { 0, 1, 2, 1 };
 }
 

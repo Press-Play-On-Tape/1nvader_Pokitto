@@ -14,6 +14,7 @@ namespace Images {
     
             #ifdef NEW_GRAPHICS
                 #include "player/portrait/normal/Player_New.h"
+                #include "player/portrait/normal/Player2_New.h"
             #else
                 #include "player/portrait/normal/Player.h"
             #endif
@@ -34,6 +35,7 @@ namespace Images {
     
             #ifdef NEW_GRAPHICS
                 #include "player/portrait/rotated/Player_New.h"
+                #include "player/portrait/rotated/Player2_New.h"
             #else
                 #include "player/portrait/rotated/Player.h"
             #endif
@@ -58,6 +60,7 @@ namespace Images {
 
         #ifdef NEW_GRAPHICS
             #include "player/landscape/Player_New.h"
+            #include "player/landscape/Player2_New.h"
         #else
             #include "player/landscape/Player.h"
         #endif

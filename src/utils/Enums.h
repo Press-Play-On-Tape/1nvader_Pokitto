@@ -85,3 +85,8 @@ enum class SoundEffect : uint8_t {
     Player_Hit,
     Drop_Bomb,
 };
+
+enum class EnemyType : uint8_t {
+    Single,
+    Double,
+};

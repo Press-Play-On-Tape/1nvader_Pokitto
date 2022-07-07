@@ -14,7 +14,7 @@ Audio::Sink<2, PROJ_AUD_FREQ> audio;
 
 int main(){
     
-    cookie.begin("Buttons", sizeof(cookie), (char*)&cookie);
+    cookie.begin("1nvader", sizeof(cookie), (char*)&cookie);
 
     PC::begin();
     PD::loadRGBPalette(palettePico);  

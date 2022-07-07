@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../utils/Constants.h"
+#include "../utils/Enums.h"
 #include "Player.h"
 
 struct Mothership {
@@ -14,7 +15,12 @@ struct Mothership {
         uint8_t counter = Constants::MothershipCounterMax;
         uint8_t wave = 0;
 
+        bool canTurn = false;
+
         Movement movement = Movement::Up;
+        EnemyType type = EnemyType::Single;
+        EnemyType frame = EnemyType::Single;
+
 
     public:
 
@@ -22,13 +28,21 @@ struct Mothership {
         uint8_t getHeight()                                 { return this->height; }
         uint8_t getCounter()                                { return this->counter; }
         uint8_t getExplosionCounter()                       { return this->explosionCounter; }
+        bool getCanTurn()                                   { return this->canTurn; }
+
         Movement getMovement()                              { return this->movement; }
+        EnemyType getEnemyType()                            { return this->type; }
+        EnemyType getEnemyFrame()                           { return this->frame; }  // which image to show
 
         void setPos(int16_t val)                            { this->pos = val; }
         void setHeight(uint8_t val)                         { this->height = val; }
         void setCounter(uint8_t val)                        { this->counter = val; }
-        void setMovement(Movement val)                      { this->movement = val; }
         void setRowAdjustment(int8_t val)                   { this->rowAdjustment = val; }
+        void setCanTurn(bool val)                           { this->canTurn = val; }
+
+        void setMovement(Movement val)                      { this->movement = val; }
+        void setEnemyType(EnemyType val)                    { this->type = val; }
+        void setEnemyFrame(EnemyType val)                   { this->type = frame; }
 
     private:
     
@@ -72,10 +86,14 @@ struct Mothership {
                     this->decPos(gameRotation, gameMode);
 
                     if (this->getPos() <= Constants::Portrait::MothershipMinPos) {
+
                         this->setMovement(Movement::Down);
+                        this->canTurn = true;
+
                         if (this->getHeight() > 0) {
                             this->decHeight();
                         }
+
                     }
 
                     break;
@@ -85,10 +103,14 @@ struct Mothership {
                     this->incPos(gameRotation, gameMode);
 
                     if (this->getPos() >= Constants::Portrait::MothershipMaxPos) {
+
                         this->setMovement(Movement::Up);
+                        this->canTurn = true;
+
                         if (this->getHeight() > 0) {
                             this->decHeight();
                         }
+
                     }
 
                     break;
@@ -98,10 +120,14 @@ struct Mothership {
                     this->decPos(gameRotation, gameMode);
 
                     if (this->getPos() <= Constants::Landscape::MothershipMinPos) {
+
                         this->setMovement(Movement::Right);
+                        this->canTurn = true;
+
                         if (this->getHeight() < Constants::ScreenHeight) {
                             this->decHeight();
                         }
+
                     }
 
                     break;
@@ -111,10 +137,14 @@ struct Mothership {
                     this->incPos(gameRotation, gameMode);
 
                     if (this->getPos() >= Constants::Landscape::MothershipMaxPos) {
+
                         this->setMovement(Movement::Left);
+                        this->canTurn = true;
+
                         if (this->getHeight() < Constants::ScreenHeight) {
                             this->decHeight();
                         }
+
                     }
 
                     break;
@@ -125,11 +155,22 @@ struct Mothership {
 
         void die(GameRotation gameRotation) {
 
+            if (this->type == EnemyType::Double && this->frame == EnemyType::Single) {
+
+                this->frame = EnemyType::Double;
+                return;
+
+            }
+
             switch (gameRotation) {
 
                 case GameRotation::Portrait:        
 
                     if (this->rowAdjustment == Constants::MothershipRowHeight) {
+
+                        this->canTurn = true;
+                        this->type = static_cast<EnemyType>(random(0,2));
+                        this->frame = EnemyType::Single;
 
                         if (random(0, 2) == 0) {
                             this->pos = Constants::Portrait::MothershipMinPos;
@@ -178,6 +219,10 @@ struct Mothership {
                     break;
 
                 case GameRotation::Landscape:        
+
+                    this->canTurn = true;
+                    this->type = static_cast<EnemyType>(random(0,2));
+                    this->frame = EnemyType::Single;
 
                     if (random(0, 2) == 0) {
                         this->pos = Constants::Landscape::MothershipMinPos;
@@ -396,7 +441,6 @@ struct Mothership {
 
         int16_t getPosDisplay() { 
 
-//printf("this->pos %i, %i\n", this->pos, this->pos / 100);
             return this->pos / 100; 
 
         }
@@ -433,11 +477,43 @@ struct Mothership {
             
         }
 
-        void reset(GameRotation gameRotation, int8_t rowAdjustment) {
+        void swapMovement() {
+
+             switch (this->getMovement()) {
+
+                case Movement::Up:
+
+                    this->setMovement(Movement::Down);
+                    break;
+
+                case Movement::Down:
+
+                    this->setMovement(Movement::Up);
+                    break;
+
+                case Movement::Left:
+
+                    this->setMovement(Movement::Right);
+                    break;
+
+                case Movement::Right:
+
+                    this->setMovement(Movement::Left);
+                    break;
+
+            }
+
+            this->canTurn = false;
+
+        }
+
+        void reset(GameRotation gameRotation, int8_t rowAdjustment, EnemyType enemyType) {
 
             this->counter = Constants::MothershipCounterMax;
             this->rowAdjustment = rowAdjustment;
             this->wave = 0;
+            this->canTurn = true;
+            this->type = enemyType;
 
             switch (gameRotation) {
 

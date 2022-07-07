@@ -12,7 +12,7 @@ using PD = Pokitto::Display;
 void Game::splashScreen_Init() {
 
     this->gameState = GameState::Splash;
-
+    this->splashScreenVariables.buttonCounter = 32;
 }
 
 
@@ -23,7 +23,9 @@ void Game::splashScreen() {
 
     auto justPressed = PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B) || PC::buttons.pressed(BTN_C);
 
-    if (justPressed > 0) {
+    if (this->splashScreenVariables.buttonCounter > 0) this->splashScreenVariables.buttonCounter--;
+
+    if (justPressed > 0 && this->splashScreenVariables.buttonCounter == 0) {
 
         this->gameState = GameState::Title_Init; 
 

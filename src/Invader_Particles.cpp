@@ -54,7 +54,7 @@ void Game::updateAndRenderParticles(GameRotation gameRotation) {
 
                     if (pSize == 1) {
 
-                        PD::setColor(7);
+                        PD::setColor(3);
                         PD::drawPixel(particles[i].getY(), particles[i].getX());
 
                     } 
@@ -70,7 +70,7 @@ void Game::updateAndRenderParticles(GameRotation gameRotation) {
 
                     if (pSize == 1) {
 
-                        PD::setColor(7);
+                        PD::setColor(3);
                         PD::drawPixel( particles[i].getX(), particles[i].getY());
 
                     } 
