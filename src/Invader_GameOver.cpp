@@ -116,21 +116,13 @@ void Game::gameOver() {
     renderScenery(this->cookie->gameMode, true);
     renderStars(this->cookie->gameMode, this->cookie->gameRotation);
 
-    #ifdef NEW_GRAPHICS
-        uint8_t frame = (PC::frameCount % 12) < 6 ? 0 : 1;
-    #else
-        uint8_t frame = (PC::frameCount % 36) / 6;
-    #endif
+    uint8_t frame = (PC::frameCount % 12) < 6 ? 0 : 1;
 
     switch (this->cookie->gameRotation) {
 
         case GameRotation::Portrait:
 
-            #ifdef NEW_GRAPHICS
-                PD::drawBitmap(gameOverScreenVars.counter, 21, Images::Portrait::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
-            #else
-                PD::drawBitmap(gameOverScreenVars.counter, 23, Images::Portrait::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[Constants::Mothership_Frames[frame]]);
-            #endif
+            PD::drawBitmap(gameOverScreenVars.counter, 21, Images::Portrait::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
 
             if (gameOverScreenVars.counter == 58) {
 
@@ -145,11 +137,7 @@ void Game::gameOver() {
 
         case GameRotation::Landscape:
 
-            #ifdef NEW_GRAPHICS
-                PD::drawBitmap(32, gameOverScreenVars.counter, Images::Landscape::MOTHERSHIP_SIZE_LANDSCAPE::Mothership_Title[frame]);
-            #else
-                PD::drawBitmap(34, gameOverScreenVars.counter, Images::Landscape::MOTHERSHIP_SIZE_LANDSCAPE::Mothership_Title[Constants::Mothership_Frames[frame]]);
-            #endif
+            PD::drawBitmap(32, gameOverScreenVars.counter, Images::Landscape::MOTHERSHIP_SIZE_LANDSCAPE::Mothership_Title[frame]);
 
             if (gameOverScreenVars.counter == 4) {
 

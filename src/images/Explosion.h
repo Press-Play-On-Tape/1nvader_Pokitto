@@ -3,6 +3,7 @@
 namespace Images {
 
     #include "explosion/Particle.h"
+    #include "explosion/Particle_Red.h"
 
     namespace Portrait {
 

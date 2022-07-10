@@ -6,23 +6,23 @@
 using PC = Pokitto::Core;
 using PD = Pokitto::Display;
 
-void Game::launchParticles(GameRotation gameRotation) {
+void Game::launchParticles(GameRotation gameRotation, uint8_t color) {
 
     switch (gameRotation) {
 
         case GameRotation::Portrait:
-            launchParticles(gameRotation, Constants::ScreenHeight / 2, Constants::ScreenWidth / 2);
+            launchParticles(gameRotation, Constants::ScreenHeight / 2, Constants::ScreenWidth / 2, color);
             break;
 
         case GameRotation::Landscape:
-            launchParticles(gameRotation, Constants::ScreenWidth / 2, Constants::ScreenHeight / 2);
+            launchParticles(gameRotation, Constants::ScreenWidth / 2, Constants::ScreenHeight / 2, color);
             break;
 
     }
 
 }
 
-void Game::launchParticles(GameRotation gameRotation, int16_t x, int16_t y) {
+void Game::launchParticles(GameRotation gameRotation, int16_t x, int16_t y, uint8_t color) {
 
     for (int i = 0; i < Constants::ParticlesMax; i++) {
 
@@ -33,6 +33,7 @@ void Game::launchParticles(GameRotation gameRotation, int16_t x, int16_t y) {
         particles[i].setCounter(random(10, 46));
         particles[i].setSize(random(1, 3));
         particles[i].setRotation(gameRotation);
+        particles[i].setColor(color);
     
     }
 
@@ -54,13 +55,18 @@ void Game::updateAndRenderParticles(GameRotation gameRotation) {
 
                     if (pSize == 1) {
 
-                        PD::setColor(3);
+                        PD::setColor(particles[i].getColor());
                         PD::drawPixel(particles[i].getY(), particles[i].getX());
 
                     } 
                     else {
 
-                        PD::drawBitmap(particles[i].getY(), particles[i].getX(), Images::Particle);
+                        if (particles[i].getColor() == 3) {
+                            PD::drawBitmap(particles[i].getY(), particles[i].getX(), Images::Particle);
+                        }
+                        else {
+                            PD::drawBitmap(particles[i].getY(), particles[i].getX(), Images::Particle_Red);
+                        }
 
                     }
 
@@ -70,14 +76,18 @@ void Game::updateAndRenderParticles(GameRotation gameRotation) {
 
                     if (pSize == 1) {
 
-                        PD::setColor(3);
+                        PD::setColor(particles[i].getColor());
                         PD::drawPixel( particles[i].getX(), particles[i].getY());
 
                     } 
                     else {
 
-                        PD::drawBitmap( particles[i].getX(), particles[i].getY(), Images::Particle);
-
+                        if (particles[i].getColor() == 3) {
+                            PD::drawBitmap( particles[i].getX(), particles[i].getY(), Images::Particle);
+                        }
+                        else {
+                            PD::drawBitmap( particles[i].getX(), particles[i].getY(), Images::Particle_Red);
+                        }
                     }
 
                     break;

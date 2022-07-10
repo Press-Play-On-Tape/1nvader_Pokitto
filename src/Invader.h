@@ -30,7 +30,7 @@ class Game {
 
         Player player1;
         Player player2;
-        Mothership mothership;
+        Mothership motherships[2];
         Bomb bomb;
 
         File mainThemeFile;
@@ -67,8 +67,8 @@ class Game {
         void gameOver_Init();
         void gameOver();
 
-        void launchParticles(GameRotation gameRotation);
-        void launchParticles(GameRotation gameRotation, int16_t x, int16_t y);
+        void launchParticles(GameRotation gameRotation, uint8_t color);
+        void launchParticles(GameRotation gameRotation, int16_t x, int16_t y, uint8_t color);
         void updateAndRenderParticles(GameRotation gameRotation);
 
         void playTheme(Theme theme);
@@ -79,6 +79,7 @@ class Game {
         void renderScenery(GameMode gameMode, bool hideCentreline);
         void renderHighScore(GameMode gameMode, bool centre);
         void renderInvaderSign();
+        void renderMothership(Mothership &mothership);
         void renderStars(GameMode gameMode, GameRotation gameRotation);
         bool collide(Rect rect1, Rect rect2);
         

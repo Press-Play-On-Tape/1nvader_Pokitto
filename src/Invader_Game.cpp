@@ -10,7 +10,8 @@ void Game::game_Init() {
 
     gameState = GameState::Game;
 
-    mothership.reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single);
+    motherships[0].reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
+    motherships[1].reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, false);
     gamePlayVars.bombCounter = random(128, 256);
 
     player1.reset(0);
@@ -66,8 +67,7 @@ void Game::game_Init() {
 
     }            
 
-
-    player1.setScore(300);
+    //player1.setScore(300);
 
 }   
 
@@ -80,31 +80,33 @@ void Game::game() {
 
         if (player1.getScore() + player2.getScore() >= Constants::Score_DropBomb) {
 
-            if ((this->cookie->gameRotation == GameRotation::Landscape && mothership.getHeight() <= 32) || (this->cookie->gameRotation == GameRotation::Portrait && mothership.getHeight() >= 38)) {
+            for (Mothership &mothership : this->motherships) {
 
-                if ((this->cookie->gameRotation == GameRotation::Landscape && mothership.getPosDisplay() > -10 && mothership.getPosDisplay() < 93) || (this->cookie->gameRotation == GameRotation::Portrait && mothership.getPosDisplay() > -4 && mothership.getPosDisplay() < 76)) {
+                if (mothership.isActive()) {
 
-                    gamePlayVars.bombCounter--;
+                    if ((this->cookie->gameRotation == GameRotation::Landscape && mothership.getHeight() <= 32) || (this->cookie->gameRotation == GameRotation::Portrait && mothership.getHeight() >= 38)) {
 
-                }
+                        if ((this->cookie->gameRotation == GameRotation::Landscape && mothership.getPosDisplay() > -10 && mothership.getPosDisplay() < 93) || (this->cookie->gameRotation == GameRotation::Portrait && mothership.getPosDisplay() > -4 && mothership.getPosDisplay() < 76)) {
 
-                if (gamePlayVars.bombCounter == 0) {
+                            gamePlayVars.bombCounter--;
 
-                    #ifdef SOUNDS
-                        playSoundEffect(SoundEffect::Drop_Bomb);
-                    #endif
+                        }
 
-                    bomb.setActive(true);
+                        if (gamePlayVars.bombCounter == 0) {
 
-                    #ifdef NEW_GRAPHICS
-                        bomb.setPos(mothership.getPosDisplay() + 10);
-                    #else
-                        bomb.setPos(mothership.getPosDisplay() + 6);
-                    #endif
+                            #ifdef SOUNDS
+                                playSoundEffect(SoundEffect::Drop_Bomb);
+                            #endif
 
-                    bomb.setHeight(mothership.getHeight() + 6);
+                            bomb.setActive(true);
+                            bomb.setPos(mothership.getPosDisplay() + 10);
+                            bomb.setHeight(mothership.getHeight() + 6);
 
-                    gamePlayVars.bombCounter = random(128, 256);
+                            gamePlayVars.bombCounter = random(128, 256);
+
+                        }
+
+                    }
 
                 }
 
@@ -115,45 +117,53 @@ void Game::game() {
 
         // Enemy change directions?
 
-        if (mothership.getCanTurn() && player1.getScore() + player2.getScore() >= Constants::Score_ChangeDirection) {
+        for (Mothership &mothership : this->motherships) {
 
-            uint8_t randMax = (player1.getScore() + player2.getScore()) / 16;
-            if (randMax < 20) randMax = 20;
+            if (mothership.isActive()) {
 
-            switch (this->cookie->getRotation()) {
+                if (mothership.getCanTurn() && player1.getScore() + player2.getScore() >= Constants::Score_ChangeDirection) {
 
-                case GameRotation::Landscape:
+                    uint8_t randMax = (player1.getScore() + player2.getScore()) / 16;
+                    if (randMax < 20) randMax = 20;
 
-                    if (((mothership.getMovement() == Movement::Left && mothership.getPosDisplay() > 15 && mothership.getPosDisplay() < 40) ||
-                         (mothership.getMovement() == Movement::Right && mothership.getPosDisplay() > 30 && mothership.getPosDisplay() < 55)) &&
-                          mothership.getHeight() <= 32) {
+                    switch (this->cookie->getRotation()) {
 
-                        if (random(0, 50 - randMax) == 0) {
-                            mothership.swapMovement();
-                        }
+                        case GameRotation::Landscape:
 
+                            if (((mothership.getMovement() == Movement::Left && mothership.getPosDisplay() > 15 && mothership.getPosDisplay() < 40) ||
+                                (mothership.getMovement() == Movement::Right && mothership.getPosDisplay() > 30 && mothership.getPosDisplay() < 55)) &&
+                                mothership.getHeight() <= 32) {
+
+                                if (random(0, 50 - randMax) == 0) {
+                                    mothership.swapMovement();
+                                }
+
+                            }
+
+                            break;
+
+
+                        case GameRotation::Portrait:
+
+                            if (((mothership.getMovement() == Movement::Up && mothership.getPosDisplay() > 0 && mothership.getPosDisplay() < 30) ||
+                                (mothership.getMovement() == Movement::Down && mothership.getPosDisplay() > 25 && mothership.getPosDisplay() < 60)) &&
+                                mothership.getHeight() >= 38) {
+
+                                if (random(0, 50 - randMax) == 0) {
+                                    mothership.swapMovement();
+                                }
+
+                            }
+
+                            break;
+
+                    
                     }
+                    
+                }
 
-                    break;
-
-
-                case GameRotation::Portrait:
-
-                    if (((mothership.getMovement() == Movement::Left && mothership.getPosDisplay() > 30) ||
-                         (mothership.getMovement() == Movement::Right && mothership.getPosDisplay() < 60)) &&
-                          mothership.getHeight() >= 38) {
-
-                        if (random(0, 50 - randMax) == 0) {
-                            mothership.swapMovement();
-                        }
-
-                    }
-
-                    break;
-
-            
             }
-            
+
         }
 
 
@@ -193,13 +203,27 @@ void Game::game() {
 
             movePlayer(player1, player2);
             movePlayer(player2, player1);
-            mothership.move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2);
+
+            if (motherships[0].isActive()) {
+                motherships[0].move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2, &motherships[1]);
+            }
+
+            if (motherships[1].isActive()) {
+                motherships[1].move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2, &motherships[0]);
+            }
 
         }
         else {
 
             movePlayer1();
-            mothership.move(this->cookie->gameRotation, this->cookie->gameMode, player1);
+
+            if (motherships[0].isActive()) {
+                motherships[0].move(this->cookie->gameRotation, this->cookie->gameMode, player1, &motherships[1]);
+            }
+
+            if (motherships[1].isActive()) {
+                motherships[1].move(this->cookie->gameRotation, this->cookie->gameMode, player1, &motherships[0]);
+            }
 
         }
 
@@ -217,23 +241,31 @@ void Game::game() {
 
             case GameRotation::Portrait:
 
-                if (mothership.getHeight() < Constants::PlayerHeight) {
+                for (Mothership &mothership : this->motherships) {
 
-                    switch (mothership.getMovement()) {
+                    if (mothership.isActive()) {
+                                
+                        if (mothership.getHeight() < Constants::PlayerHeight) {
 
-                        case Movement::Up:
-                            if (mothership.getPosDisplay() < -Constants::MothershipHeight) {
-                                gameState = GameState::GameOver_Init;
+                            switch (mothership.getMovement()) {
+
+                                case Movement::Up:
+                                    if (mothership.getPosDisplay() < -Constants::MothershipHeight) {
+                                        gameState = GameState::GameOver_Init;
+                                    }
+                                    break;
+
+                                case Movement::Down:
+                                    if (mothership.getPosDisplay() > Constants::ScreenHeight) {
+                                        gameState = GameState::GameOver_Init;
+                                    }
+                                    break;
+
+                                default: break;
+
                             }
-                            break;
 
-                        case Movement::Down:
-                            if (mothership.getPosDisplay() > Constants::ScreenHeight) {
-                                gameState = GameState::GameOver_Init;
-                            }
-                            break;
-
-                        default: break;
+                        }
 
                     }
 
@@ -243,23 +275,31 @@ void Game::game() {
             
             case GameRotation::Landscape:
 
-                if (mothership.getHeight() > Constants::ScreenHeight - Constants::PlayerHeight - Constants::MothershipHeight) {
+                for (Mothership &mothership : this->motherships) {
 
-                    switch (mothership.getMovement()) {
+                    if (mothership.isActive()) {
 
-                        case Movement::Left:
-                            if (mothership.getPosDisplay() < -Constants::MothershipHeight) {
-                                gameState = GameState::GameOver_Init;
+                        if (mothership.getHeight() > Constants::ScreenHeight - Constants::PlayerHeight - Constants::MothershipHeight) {
+
+                            switch (mothership.getMovement()) {
+
+                                case Movement::Left:
+                                    if (mothership.getPosDisplay() < -Constants::MothershipHeight) {
+                                        gameState = GameState::GameOver_Init;
+                                    }
+                                    break;
+
+                                case Movement::Right:
+                                    if (mothership.getPosDisplay() > Constants::ScreenWidth) {
+                                        gameState = GameState::GameOver_Init;
+                                    }
+                                    break;
+
+                                default: break;
+
                             }
-                            break;
 
-                        case Movement::Right:
-                            if (mothership.getPosDisplay() > Constants::ScreenWidth) {
-                                gameState = GameState::GameOver_Init;
-                            }
-                            break;
-
-                        default: break;
+                        }
 
                     }
 
@@ -269,6 +309,30 @@ void Game::game() {
 
 
         }    
+
+
+
+        // Launch a second mothership?
+
+        if (player1.getScore() + player2.getScore() > Constants::Score_Double && random(0, Constants::Random_AddEnemy) == 0) {
+
+            if (!motherships[0].isActive()) {
+
+                if ((this->cookie->gameRotation == GameRotation::Landscape && motherships[1].getHeight() > 24) || (this->cookie->gameRotation == GameRotation::Portrait && motherships[1].getHeight() >= 28)) {
+                    motherships[0].reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
+                }
+
+            }
+
+            if (!motherships[1].isActive()) {
+
+                if ((this->cookie->gameRotation == GameRotation::Landscape && motherships[0].getHeight() > 24) || (this->cookie->gameRotation == GameRotation::Portrait && motherships[0].getHeight() >= 28)) {
+                    motherships[1].reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
+                }
+
+            }
+
+        }
 
     }    
 
@@ -281,21 +345,11 @@ void Game::game() {
     updateAndRenderParticles(this->cookie->gameRotation);
     renderStars(this->cookie->gameMode, this->cookie->gameRotation);
 
-    #ifdef NEW_GRAPHICS
-        uint8_t frame = ((PC::frameCount % 12) < 6 ? 0 : 1) + (this->mothership.getEnemyFrame() == EnemyType::Double ? 2 : 0);
-    #else
-        uint8_t frame = (PC::frameCount % 36) / 6;
-    #endif
-
     switch (this->cookie->gameRotation) {
 
         case GameRotation::Portrait:
 
-            #ifdef NEW_GRAPHICS
-                PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player_New);
-            #else
-                PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player);
-            #endif
+            PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player_New);
 
             if (player1.getExplosionCounter() > 0) {
 
@@ -305,11 +359,7 @@ void Game::game() {
 
             if (this->cookie->gameMode == GameMode::Double) {
 
-                #ifdef NEW_GRAPHICS
-                    PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player2_New);
-                #else
-                    PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player);
-                #endif
+                PD::drawBitmap(0, player2.getPos(), Images::Portrait::Normal::Player2_New);
 
                 if (player2.getExplosionCounter() > 0) {
 
@@ -322,98 +372,13 @@ void Game::game() {
 
             // Render mothership ..
 
-            switch (mothership.getEnemyType()) {
+            for (Mothership &mothership : this->motherships) {
 
-                case EnemyType::Single:
+                if (mothership.isActive()) {
 
-                    switch (mothership.getExplosionCounter()) {
+                    this->renderMothership(mothership);
 
-                        case 0:
-                            #ifdef NEW_GRAPHICS
-                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
-                            #else
-                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
-                            #endif
-                            break;
-
-                        case 1 ... Constants::MothershipExplosionMax / 2:
-                            PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
-                            break;
-
-                        case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
-                            #ifdef NEW_GRAPHICS
-                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
-                            #else
-                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
-                            #endif
-                            PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
-                            break;
-
-                    }
-
-                    break;
-
-                case EnemyType::Double:
-
-                    switch (mothership.getEnemyFrame()) {
-
-                        case EnemyType::Single:
-
-                            #ifdef NEW_GRAPHICS
-                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
-                            #else
-                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
-                            #endif
-
-                            switch (mothership.getExplosionCounter()) {
-
-                                case 0:
-                                    break;
-
-                                case 1 ... Constants::MothershipExplosionMax / 2:
-                                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
-                                    break;
-
-                                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
-                                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
-                                    break;
-
-                            }
-
-                            break;
-
-                        case EnemyType::Double:
-
-                            switch (mothership.getExplosionCounter()) {
-
-                                case 0:
-                                    #ifdef NEW_GRAPHICS
-                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
-                                    #else
-                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
-                                    #endif
-                                    break;
-
-                                case 1 ... Constants::MothershipExplosionMax / 2:
-                                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
-                                    break;
-
-                                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
-                                    #ifdef NEW_GRAPHICS
-                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
-                                    #else
-                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[Constants::Mothership_Frames[frame]]);
-                                    #endif
-                                    PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
-                                    break;
-
-                            }
-
-                            break;
-
-                    }
-
-                    break;
+                }
 
             }
 
@@ -462,11 +427,7 @@ void Game::game() {
 
         case GameRotation::Landscape:
 
-            #ifdef NEW_GRAPHICS
-                PD::drawBitmap(player1.getPos(), 80, Images::Landscape::Player_New);
-            #else
-                PD::drawBitmap(player1.getPos(), 80, Images::Landscape::Player);
-            #endif
+            PD::drawBitmap(player1.getPos(), 80, Images::Landscape::Player_New);
 
             if (player1.getExplosionCounter() > 0) {
 
@@ -476,11 +437,7 @@ void Game::game() {
 
             if (this->cookie->gameMode == GameMode::Double) {
 
-                #ifdef NEW_GRAPHICS
-                    PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player2_New);
-                #else
-                    PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player);
-                #endif
+                PD::drawBitmap(player2.getPos(), 80, Images::Landscape::Player2_New);
 
                 if (player2.getExplosionCounter() > 0) {
 
@@ -490,98 +447,16 @@ void Game::game() {
 
             }
 
+
             // Render mothership ..
 
-            switch (mothership.getEnemyType()) {
+            for (Mothership &mothership : this->motherships) {
 
-                case EnemyType::Single:
-                        
-                    switch (mothership.getExplosionCounter()) {
+                if (mothership.isActive()) {
+        
+                    this->renderMothership(mothership);
 
-                        case 0:
-                            #ifdef NEW_GRAPHICS
-                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
-                            #else
-                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
-                            #endif
-                            break;
-
-                        case 1 ... Constants::MothershipExplosionMax / 2:
-                            PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[1]);
-                            break;
-
-                        case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
-                            #ifdef NEW_GRAPHICS
-                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
-                            #else
-                                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
-                            #endif
-                            PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[0]);
-                            break;
-
-                    }
-
-                    break;
-
-                case EnemyType::Double:
-
-                    switch (mothership.getEnemyFrame()) {
-
-                        case EnemyType::Single:
-
-                            #ifdef NEW_GRAPHICS
-                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
-                            #else
-                                PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
-                            #endif
-                                
-                            switch (mothership.getExplosionCounter()) {
-
-                                case 0:
-                                    break;
-
-                                case 1 ... Constants::MothershipExplosionMax / 2:
-                                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[1]);
-                                    break;
-
-                                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
-                                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[0]);
-                                    break;
-
-                            }     
-
-                            break;
-
-                        case EnemyType::Double:
-
-                            switch (mothership.getExplosionCounter()) {
-
-                                case 0:
-                                    #ifdef NEW_GRAPHICS
-                                        PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
-                                    #else
-                                        PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
-                                    #endif
-                                    break;
-
-                                case 1 ... Constants::MothershipExplosionMax / 2:
-                                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[1]);
-                                    break;
-
-                                case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax:
-                                    #ifdef NEW_GRAPHICS
-                                        PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Mothership[frame]);
-                                    #else
-                                        PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Landscape::Mothership[Constants::Mothership_Frames[frame]]);
-                                    #endif
-                                    PD::drawBitmap(mothership.getPosDisplay(), mothership.getHeight(), Images::Landscape::Explosion[0]);
-                                    break;
-
-                            }
-
-                            break;
-
-                    }
+                }
 
             }
 
@@ -644,7 +519,7 @@ void Game::game() {
             #endif
         }
 
-        if (gamePlayVars.waveCounter >= 55 && PC::frameCount % 64 == 0) { launchParticles(this->cookie->gameRotation); }
+        if (gamePlayVars.waveCounter >= 55 && PC::frameCount % 64 == 0) { launchParticles(this->cookie->gameRotation, 3); }
 
         if (PC::buttons.pressed(BTN_LEFT) || PC::buttons.pressed(BTN_RIGHT) || PC::buttons.pressed(BTN_UP) || PC::buttons.pressed(BTN_DOWN) || PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B)) {
 
@@ -658,14 +533,26 @@ void Game::game() {
             movePlayer(player1, player2);
             movePlayer(player2, player1);
 
+            if (motherships[0].isActive()) {
+                if (motherships[0].getExplosionCounter() > 0) motherships[0].move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2, &motherships[1]);
+            }
 
-            if (mothership.getExplosionCounter() > 0) mothership.move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2);
+            if (motherships[1].isActive()) {
+                if (motherships[1].getExplosionCounter() > 0) motherships[1].move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2, &motherships[0]);
+            }
 
         }
         else {
 
             movePlayer1();
-            if (mothership.getExplosionCounter() > 0) mothership.move(this->cookie->gameRotation, this->cookie->gameMode, player1);
+
+            if (motherships[0].isActive()) {
+                if (motherships[0].getExplosionCounter() > 0) motherships[0].move(this->cookie->gameRotation, this->cookie->gameMode, player1, &motherships[1]);
+            }
+
+            if (motherships[1].isActive()) {
+                if (motherships[1].getExplosionCounter() > 0) motherships[1].move(this->cookie->gameRotation, this->cookie->gameMode, player1, &motherships[0]);
+            }
 
         }
 
@@ -893,112 +780,127 @@ void Game::moveBullet(Player &player) {
 
     }
 
-    if (mothership.getExplosionCounter() != 0) return;
-    if (!player.getBulletActive()) return;
 
+    for (Mothership &mothership : this->motherships) {
 
-    switch (this->cookie->gameRotation) {
-
-        case GameRotation::Portrait:
-            {
-                Rect bulletRect = { player.getBulletX() + 1, player.getBulletY() +1, Constants::BulletHeight - 2, Constants::BulletWidth - 2 };
-
-                #ifdef NEW_GRAPHICS
-                    Rect mothershipRect = { mothership.getHeight() + 3, mothership.getPosDisplay() + 4, Constants::MothershipHeight - 4, Constants::MothershipWidth - 7 };
-                #else
-                    Rect mothershipRect = { mothership.getHeight() + 1, mothership.getPosDisplay() + 1, Constants::MothershipHeight - 2, Constants::MothershipWidth - 2 };
-                #endif
-
-                if (this->collide(bulletRect, mothershipRect)) {
-
-                    #ifdef SOUNDS
-                        playSoundEffect(SoundEffect::Mini_Explosion);
-                    #endif
-
-                    launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipWidth / 2), mothership.getHeight() + (Constants::MothershipHeight / 2));
-
-                    if (this->cookie->gameMode == GameMode::TugOfWar) {
-                        mothership.explode(player.getPlayerIdx() == 0 ? -Constants::TugOfWarRowAdjustment : Constants::TugOfWarRowAdjustment);
-                        gamePlayVars.waveCleared = false;
-                        mothership.decCounter();
-                    }
-                    else {
-                        mothership.explode(Constants::MothershipRowHeight);
-                        gamePlayVars.waveCleared = mothership.decCounter();
-                    }
-
-                    player.incScore();
-                    player.setBulletActive(false);
-
-                }
-
-                if (bomb.getActive()) {
-
-                    Rect bombRect = { bomb.getHeight() + 1, bomb.getPos() + 1, Constants::BombHeight - 2, Constants::BombWidth - 2 };
-
-                    if (this->collide(bulletRect, bombRect)) {
-
-                        #ifdef SOUNDS
-                            playSoundEffect(SoundEffect::Bomb_HitGround);
-                        #endif
-
-                        bomb.explode();
-                        player.setBulletActive(false);
-
-                    }
+        if (mothership.isActive()) {
                     
-                }
+            if (mothership.getExplosionCounter() != 0) return;
+            if (!player.getBulletActive()) return;
+
+
+            switch (this->cookie->gameRotation) {
+
+                case GameRotation::Portrait:
+                    {
+                        Rect bulletRect = { player.getBulletX() + 1, player.getBulletY() +1, Constants::BulletHeight - 2, Constants::BulletWidth - 2 };
+                        Rect mothershipRect = { mothership.getHeight() + 3, mothership.getPosDisplay() + 4, Constants::MothershipHeight - 4, Constants::MothershipWidth - 7 };
+
+                        if (this->collide(bulletRect, mothershipRect)) {
+
+                            #ifdef SOUNDS
+                                playSoundEffect(SoundEffect::Mini_Explosion);
+                            #endif
+
+                            uint8_t color = 3;
+                            if (mothership.getEnemyType() == EnemyType::Double && mothership.getEnemyFrame() == EnemyType::Single) color = 2;
+
+                            launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipWidth / 2), mothership.getHeight() + (Constants::MothershipHeight / 2), color);
+
+                            if (this->cookie->gameMode == GameMode::TugOfWar) {
+
+                                mothership.explode(player.getPlayerIdx() == 0 ? -Constants::TugOfWarRowAdjustment : Constants::TugOfWarRowAdjustment);
+                                gamePlayVars.waveCleared = false;
+                                mothership.decCounter();
+                                player.incScore();
+
+                            }
+                            else {
+
+                                mothership.explode(Constants::MothershipRowHeight);
+                                if (color == 3) {
+                                    gamePlayVars.waveCleared = mothership.decCounter();
+                                    player.incScore();
+                                }
+
+                            }
+
+                            player.setBulletActive(false);
+
+                        }
+
+                        if (bomb.getActive()) {
+
+                            Rect bombRect = { bomb.getHeight() + 1, bomb.getPos() + 1, Constants::BombHeight - 2, Constants::BombWidth - 2 };
+
+                            if (this->collide(bulletRect, bombRect)) {
+
+                                #ifdef SOUNDS
+                                    playSoundEffect(SoundEffect::Bomb_HitGround);
+                                #endif
+
+                                bomb.explode();
+                                player.setBulletActive(false);
+
+                            }
+                            
+                        }
+
+                    }
+
+                    break;
+
+                case GameRotation::Landscape:
+                    {        
+                        Rect bulletRect = { player.getBulletX() + 1, player.getBulletY() + 1, Constants::BulletWidth - 2, Constants::BulletHeight - 2 };
+                        Rect mothershipRect = { mothership.getPosDisplay() + 4, mothership.getHeight() + 1, Constants::MothershipWidth - 9, Constants::MothershipHeight - 4 };
+
+                        if (this->collide(bulletRect, mothershipRect)) {
+
+                            #ifdef SOUNDS
+                                playSoundEffect(SoundEffect::Mini_Explosion);
+                            #endif
+
+                            uint8_t color = 3;
+                            if (mothership.getEnemyType() == EnemyType::Double && mothership.getEnemyFrame() == EnemyType::Single) color = 2;
+
+                            launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipWidth / 2), mothership.getHeight() + (Constants::MothershipHeight / 2), color);
+
+                            mothership.explode(-Constants::MothershipRowHeight);                    
+
+                            if (color == 3) {
+                                gamePlayVars.waveCleared = mothership.decCounter();
+                                player.incScore();
+                            }
+                            
+                            player.setBulletActive(false);
+
+                        }
+
+                        if (bomb.getActive()) {
+
+                            Rect bombRect = { bomb.getHeight() + 1, bomb.getPos() + 1, Constants::BombWidth - 2, Constants::BombHeight - 2 };
+
+                            if (this->collide(bulletRect, bombRect)) {
+
+                                #ifdef SOUNDS
+                                    playSoundEffect(SoundEffect::Bomb_HitGround);
+                                #endif
+
+                                bomb.explode();
+                                player.setBulletActive(false);
+
+                            }
+                            
+                        }
+
+                    }
+
+                    break;
 
             }
 
-            break;
-
-        case GameRotation::Landscape:
-            {        
-                Rect bulletRect = { player.getBulletX() + 1, player.getBulletY() + 1, Constants::BulletWidth - 2, Constants::BulletHeight - 2 };
-
-                #ifdef NEW_GRAPHICS
-                    Rect mothershipRect = { mothership.getPosDisplay() + 4, mothership.getHeight() + 1, Constants::MothershipWidth - 9, Constants::MothershipHeight - 4 };
-                #else
-                    Rect mothershipRect = { mothership.getPosDisplay() + 1, mothership.getHeight() + 1, Constants::MothershipWidth - 2, Constants::MothershipHeight - 2 };
-                #endif
-
-                if (this->collide(bulletRect, mothershipRect)) {
-
-                    #ifdef SOUNDS
-                        playSoundEffect(SoundEffect::Mini_Explosion);
-                    #endif
-
-                    launchParticles(this->cookie->gameRotation, mothership.getPosDisplay() + (Constants::MothershipWidth / 2), mothership.getHeight() + (Constants::MothershipHeight / 2));
-
-                    mothership.explode(-Constants::MothershipRowHeight);                    
-                    gamePlayVars.waveCleared = mothership.decCounter();
-
-                    player.incScore();
-                    player.setBulletActive(false);
-
-                }
-
-                if (bomb.getActive()) {
-
-                    Rect bombRect = { bomb.getHeight() + 1, bomb.getPos() + 1, Constants::BombWidth - 2, Constants::BombHeight - 2 };
-
-                    if (this->collide(bulletRect, bombRect)) {
-
-                        #ifdef SOUNDS
-                            playSoundEffect(SoundEffect::Bomb_HitGround);
-                        #endif
-
-                        bomb.explode();
-                        player.setBulletActive(false);
-
-                    }
-                    
-                }
-
-            }
-
-            break;
+        }
 
     }
 
@@ -1092,3 +994,4 @@ void Game::moveBomb() {
     }
 
 }
+

@@ -13,6 +13,7 @@ struct Particle {
         uint8_t counterInit = 0;
         uint8_t counter = 0;
         uint8_t pSize = 1;
+        uint8_t color = 1;
         GameRotation rotation = GameRotation::Portrait; 
 
     public:
@@ -25,6 +26,7 @@ struct Particle {
         int16_t getY()                          { return this->y; }
         int8_t getCounter()                     { return this->counter; }
         uint8_t getSize()                       { return this->pSize; }
+        uint8_t getColor()                      { return this->color; }
         GameRotation getRotation()              { return this->rotation; }
 
         void setX(int16_t val)                  { this->x = val; }
@@ -33,6 +35,7 @@ struct Particle {
         void setVelX(float val)                 { this->velx = val; }
         void setVelY(float val)                 { this->vely = val; }
         void setSize(uint8_t val)               { this->pSize = val; }
+        void setColor(uint8_t val)              { this->color = val; }
         void setRotation(GameRotation val)      { this->rotation = val; }
 
     public:

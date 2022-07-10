@@ -15,6 +15,13 @@
 
 namespace Constants {
 
+    constexpr uint8_t Score_DropBomb = 10;
+    constexpr uint8_t Score_ChangeDirection = 25;
+    constexpr uint8_t Score_Double = 50;
+
+    constexpr uint8_t Random_RemoveEnemy = 5;
+    constexpr uint8_t Random_AddEnemy = 25;
+
     constexpr uint8_t ScreenWidth = 110;
     constexpr uint8_t ScreenHeight = 88;
 
@@ -25,7 +32,6 @@ namespace Constants {
     constexpr uint8_t TugOfWarRowAdjustment = 7;
     constexpr uint8_t WaveIncrease = 50;
     
-
     constexpr uint8_t PlayerHeight = 8;
     constexpr uint8_t PlayerWidth = 11;
     constexpr uint8_t PlayerHeightNoMask = 7;
@@ -36,8 +42,6 @@ namespace Constants {
     constexpr uint8_t BulletHeight = 7;
     constexpr uint8_t BulletWidth = 5;
 
-    constexpr uint8_t Score_DropBomb = 25;
-    constexpr uint8_t Score_ChangeDirection = 25;
 
     namespace Portrait {
         constexpr int8_t PlayerMinPos = -1;
@@ -49,13 +53,8 @@ namespace Constants {
         constexpr int8_t PlayerMaxPos = ScreenWidth - 11;
     }
 
-    #ifdef NEW_GRAPHICS
-        constexpr uint8_t MothershipHeight = 16;
-        constexpr uint8_t MothershipWidth = 23;
-    #else
-        constexpr uint8_t MothershipHeight = 9;
-        constexpr uint8_t MothershipWidth = 14;
-    #endif
+    constexpr uint8_t MothershipHeight = 16;
+    constexpr uint8_t MothershipWidth = 23;
     
     constexpr uint8_t MothershipCounterMax = 80;
     constexpr uint8_t MothershipExplosionMax = 8;
@@ -73,10 +72,6 @@ namespace Constants {
         constexpr int16_t MothershipStartHeight = 16;
     }
     
-    #ifndef NEW_GRAPHICS
-    constexpr uint8_t Mothership_Frames[] = { 0, 1, 2, 3, 2, 1 };
-    #endif
-
     constexpr uint8_t Arrow_Frames[] = { 0, 1, 2, 1 };
 }
 

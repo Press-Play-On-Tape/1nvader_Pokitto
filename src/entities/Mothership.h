@@ -14,12 +14,18 @@ struct Mothership {
         uint8_t explosionCounter = 0;
         uint8_t counter = Constants::MothershipCounterMax;
         uint8_t wave = 0;
-
-        bool canTurn = false;
-
         Movement movement = Movement::Up;
+
         EnemyType type = EnemyType::Single;
         EnemyType frame = EnemyType::Single;
+
+        Movement exclaimMovement = Movement::Up;
+        uint8_t exclaimCounter = 0;
+        int16_t exclaimX = 0;
+        int16_t exclaimY = 0;
+
+        bool canTurn = false;
+        bool active = false;
 
 
     public:
@@ -28,9 +34,15 @@ struct Mothership {
         uint8_t getHeight()                                 { return this->height; }
         uint8_t getCounter()                                { return this->counter; }
         uint8_t getExplosionCounter()                       { return this->explosionCounter; }
-        bool getCanTurn()                                   { return this->canTurn; }
+        uint8_t getExclamationCounter()                     { return this->exclaimCounter; }
+        int16_t getExclamationX()                           { return this->exclaimX; }
+        int16_t getExclamationY()                           { return this->exclaimY; }
+
+        bool getCanTurn()                                   { return this->canTurn && (this->explosionCounter == 0); }
+        bool isActive()                                     { return this->active; }
 
         Movement getMovement()                              { return this->movement; }
+        Movement getExclaimMovement()                       { return this->exclaimMovement; }
         EnemyType getEnemyType()                            { return this->type; }
         EnemyType getEnemyFrame()                           { return this->frame; }  // which image to show
 
@@ -41,8 +53,11 @@ struct Mothership {
         void setCanTurn(bool val)                           { this->canTurn = val; }
 
         void setMovement(Movement val)                      { this->movement = val; }
+        void setExclaimMovement(Movement val)               { this->exclaimMovement = val; }
+
         void setEnemyType(EnemyType val)                    { this->type = val; }
-        void setEnemyFrame(EnemyType val)                   { this->type = frame; }
+        void setEnemyFrame(EnemyType val)                   { this->type = val; }
+        void setActive(bool val)                            { this->active = val; }
 
     private:
     
@@ -65,7 +80,7 @@ struct Mothership {
             
         }
 
-        void move(GameRotation gameRotation, GameMode gameMode) {
+        void move(GameRotation gameRotation, GameMode gameMode, Mothership *otherShip) {
 
             if (this->explosionCounter > 0) {
 
@@ -73,7 +88,7 @@ struct Mothership {
 
                 if (this->explosionCounter == 0) {
 
-                    this->die(gameRotation);
+                    this->die(gameRotation, otherShip);
 
                 }
 
@@ -153,7 +168,7 @@ struct Mothership {
 
         }
 
-        void die(GameRotation gameRotation) {
+        void die(GameRotation gameRotation, Mothership *otherShip) {
 
             if (this->type == EnemyType::Double && this->frame == EnemyType::Single) {
 
@@ -162,41 +177,53 @@ struct Mothership {
 
             }
 
+
+            // Calculate Random_RemoveEnemy:
+
             switch (gameRotation) {
 
                 case GameRotation::Portrait:        
 
                     if (this->rowAdjustment == Constants::MothershipRowHeight) {
 
-                        this->canTurn = true;
-                        this->type = static_cast<EnemyType>(random(0,2));
-                        this->frame = EnemyType::Single;
+                        if (otherShip != nullptr && otherShip->isActive() && random(0, Constants::Random_RemoveEnemy) == 0) {
 
-                        if (random(0, 2) == 0) {
-                            this->pos = Constants::Portrait::MothershipMinPos;
-                            this->movement = Movement::Down;
+                            this->setActive(false);
+
                         }
                         else {
-                            this->pos = Constants::Portrait::MothershipMaxPos;
-                            this->movement = Movement::Up;
-                        }
 
-                        switch (this->height) {
+                            this->canTurn = true;
+                            this->type = static_cast<EnemyType>(random(0,2));
+                            this->frame = EnemyType::Single;
 
-                            case Constants::Portrait::MothershipStartHeight:
-                                break;
+                            if (random(0, 2) == 0) {
+                                this->pos = Constants::Portrait::MothershipMinPos;
+                                this->movement = Movement::Down;
+                            }
+                            else {
+                                this->pos = Constants::Portrait::MothershipMaxPos;
+                                this->movement = Movement::Up;
+                            }
 
-                            case Constants::Portrait::MothershipStartHeight - Constants::MothershipRowHeight:
-                                this->height = Constants::Portrait::MothershipStartHeight;
-                                break;
+                            switch (this->height) {
 
-                            case Constants::Portrait::MothershipStartHeight - Constants::MothershipRowHeight - Constants::MothershipRowHeight:
-                                this->height = Constants::Portrait::MothershipStartHeight;
-                                break;
+                                case Constants::Portrait::MothershipStartHeight:
+                                    break;
 
-                            default:
-                                this->height = this->height + Constants::MothershipRowHeight + Constants::MothershipRowHeight;
-                                break;
+                                case Constants::Portrait::MothershipStartHeight - Constants::MothershipRowHeight:
+                                    this->height = Constants::Portrait::MothershipStartHeight;
+                                    break;
+
+                                case Constants::Portrait::MothershipStartHeight - Constants::MothershipRowHeight - Constants::MothershipRowHeight:
+                                    this->height = Constants::Portrait::MothershipStartHeight;
+                                    break;
+
+                                default:
+                                    this->height = this->height + Constants::MothershipRowHeight + Constants::MothershipRowHeight;
+                                    break;
+
+                            }
 
                         }
 
@@ -220,35 +247,44 @@ struct Mothership {
 
                 case GameRotation::Landscape:        
 
-                    this->canTurn = true;
-                    this->type = static_cast<EnemyType>(random(0,2));
-                    this->frame = EnemyType::Single;
+                    if (otherShip != nullptr && otherShip->isActive() && random(0, Constants::Random_RemoveEnemy) == 0) {
 
-                    if (random(0, 2) == 0) {
-                        this->pos = Constants::Landscape::MothershipMinPos;
-                        this->movement = Movement::Right;
+                        this->setActive(false);
+
                     }
                     else {
-                        this->pos = Constants::Landscape::MothershipMaxPos;
-                        this->movement = Movement::Left;
-                    }
 
-                    switch (this->height) {
+                        this->canTurn = true;
+                        this->type = static_cast<EnemyType>(random(0,2));
+                        this->frame = EnemyType::Single;
 
-                        case Constants::Landscape::MothershipStartHeight:
-                            break;
+                        if (random(0, 2) == 0) {
+                            this->pos = Constants::Landscape::MothershipMinPos;
+                            this->movement = Movement::Right;
+                        }
+                        else {
+                            this->pos = Constants::Landscape::MothershipMaxPos;
+                            this->movement = Movement::Left;
+                        }
 
-                        case Constants::Landscape::MothershipStartHeight + Constants::MothershipRowHeight:
-                            this->height = Constants::Landscape::MothershipStartHeight;
-                            break;
+                        switch (this->height) {
 
-                        case Constants::Landscape::MothershipStartHeight + Constants::MothershipRowHeight + Constants::MothershipRowHeight:
-                            this->height = Constants::Landscape::MothershipStartHeight;
-                            break;
+                            case Constants::Landscape::MothershipStartHeight:
+                                break;
 
-                        default:
-                            this->height = this->height - Constants::MothershipRowHeight - Constants::MothershipRowHeight;
-                            break;
+                            case Constants::Landscape::MothershipStartHeight + Constants::MothershipRowHeight:
+                                this->height = Constants::Landscape::MothershipStartHeight;
+                                break;
+
+                            case Constants::Landscape::MothershipStartHeight + Constants::MothershipRowHeight + Constants::MothershipRowHeight:
+                                this->height = Constants::Landscape::MothershipStartHeight;
+                                break;
+
+                            default:
+                                this->height = this->height - Constants::MothershipRowHeight - Constants::MothershipRowHeight;
+                                break;
+
+                        }
 
                     }
 
@@ -262,7 +298,13 @@ struct Mothership {
 
         void move(GameRotation gameRotation, GameMode gameMode, Player &player1) {
 
-            this->move(gameRotation, gameMode);
+            move(gameRotation, gameMode, player1, nullptr);
+
+        }
+
+        void move(GameRotation gameRotation, GameMode gameMode, Player &player1, Mothership *othership) {
+
+            this->move(gameRotation, gameMode, othership);
 
             switch (this->getMovement()) {
 
@@ -314,9 +356,16 @@ struct Mothership {
         
         }
 
+
         void move(GameRotation gameRotation, GameMode gameMode, Player &player1, Player &player2) {
 
-            this->move(gameRotation, gameMode);
+            move(gameRotation, gameMode, player1, player2, nullptr);
+
+        }
+
+        void move(GameRotation gameRotation, GameMode gameMode, Player &player1, Player &player2, Mothership *othership) {
+
+            this->move(gameRotation, gameMode, othership);
 
             switch (this->getMovement()) {
 
@@ -395,7 +444,7 @@ struct Mothership {
 
         void moveTugOfWar(Player &player1, Player &player2) {
 
-            this->move(GameRotation::Portrait, GameMode::TugOfWar);
+            this->move(GameRotation::Portrait, GameMode::TugOfWar, nullptr);
 
             switch (this->getMovement()) {
 
@@ -432,6 +481,7 @@ struct Mothership {
             }
         }
 
+
         void explode(int8_t rowAdjustment) {
 
             this->explosionCounter = Constants::MothershipExplosionMax;
@@ -439,11 +489,13 @@ struct Mothership {
 
         }
 
+
         int16_t getPosDisplay() { 
 
             return this->pos / 100; 
 
         }
+
 
         bool decCounter() {
 
@@ -459,11 +511,20 @@ struct Mothership {
             
         }
 
+
+        void decExclamationCounter() {
+
+            if (this->exclaimCounter > 0) this->exclaimCounter--;
+
+        }
+
+        
         void decHeight() {
 
             this->height = this->height - this->rowAdjustment;
             
         }
+
 
         void decPos(GameRotation gameRotation, GameMode gameMode) {
 
@@ -471,11 +532,13 @@ struct Mothership {
             
         }
 
+
         void incPos(GameRotation gameRotation, GameMode gameMode) {
 
             this->pos = this->pos + this->getSpeed(gameRotation, gameMode);
             
         }
+
 
         void swapMovement() {
 
@@ -505,15 +568,22 @@ struct Mothership {
 
             this->canTurn = false;
 
+            this->exclaimCounter = 12;
+            this->exclaimX = this->getPosDisplay() + ((this->movement == Movement::Left || this->movement == Movement::Up) ? 18 : -6);
+            this->exclaimY = this->height;
+            this->exclaimMovement = this->getMovement();
+
         }
 
-        void reset(GameRotation gameRotation, int8_t rowAdjustment, EnemyType enemyType) {
+
+        void reset(GameRotation gameRotation, int8_t rowAdjustment, EnemyType enemyType, bool active) {
 
             this->counter = Constants::MothershipCounterMax;
             this->rowAdjustment = rowAdjustment;
             this->wave = 0;
             this->canTurn = true;
             this->type = enemyType;
+            this->active = active;
 
             switch (gameRotation) {
 

@@ -11,8 +11,9 @@ void Game::tugOfWar_Init() {
 
     gameState = GameState::TugOfWar;
 
-    mothership.reset(this->cookie->gameRotation, 0, EnemyType::Single);
-    mothership.setHeight((Constants::ScreenWidth / 2) - 4);
+    motherships[0].reset(this->cookie->gameRotation, 0, EnemyType::Single, true);
+    motherships[0].setHeight((Constants::ScreenWidth / 2) - 4);
+    motherships[1].setActive(false);
 
     player1.reset(0);
     player2.reset(1);
@@ -52,7 +53,7 @@ void Game::tugOfWar() {
     
     movePlayer(player1, player2);
     movePlayer(player2, player1);
-    mothership.moveTugOfWar(player1, player2);
+    motherships[0].moveTugOfWar(player1, player2);
 
     if (player1.getBulletActive())      moveBullet(player1); 
     if (player2.getBulletActive())      moveBullet(player2);
@@ -61,19 +62,19 @@ void Game::tugOfWar() {
 
     // End of game?
 
-    if ((mothership.getHeight() <= Constants::PlayerHeight) ||
-        (mothership.getHeight() >= 96 - Constants::PlayerHeight)) {
+    if ((motherships[0].getHeight() <= Constants::PlayerHeight) ||
+        (motherships[0].getHeight() >= 96 - Constants::PlayerHeight)) {
 
-        switch (mothership.getMovement()) {
+        switch (motherships[0].getMovement()) {
 
             case Movement::Up:
-                if (mothership.getPosDisplay() < -Constants::MothershipHeight) {
+                if (motherships[0].getPosDisplay() < -Constants::MothershipHeight) {
                     gameState = GameState::GameOver_Init;
                 }
                 break;
 
             case Movement::Down:
-                if (mothership.getPosDisplay() > Constants::ScreenHeight) {
+                if (motherships[0].getPosDisplay() > Constants::ScreenHeight) {
                     gameState = GameState::GameOver_Init;
                 }
                 break;
@@ -89,11 +90,7 @@ void Game::tugOfWar() {
     renderScoreTugOfWar(player1.getScore(), player2.getScore());
     updateAndRenderParticles(GameRotation::Landscape);
 
-    #ifdef NEW_GRAPHICS
-        PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player_New);
-    #else
-        PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player);
-    #endif
+    PD::drawBitmap(0, player1.getPos(), Images::Portrait::Normal::Player_New);
 
     if (player1.getExplosionCounter() > 0) {
 
@@ -101,11 +98,7 @@ void Game::tugOfWar() {
 
     }
 
-    #ifdef NEW_GRAPHICS
-        PD::drawBitmap(102, player2.getPos(), Images::Portrait::Rotated::Player2_New);
-    #else
-        PD::drawBitmap(102, player2.getPos(), Images::Portrait::Rotated::Player);
-    #endif
+    PD::drawBitmap(102, player2.getPos(), Images::Portrait::Rotated::Player2_New);
 
     if (player2.getExplosionCounter() > 0) {
 
@@ -113,34 +106,29 @@ void Game::tugOfWar() {
 
     }
 
-    #ifdef NEW_GRAPHICS
-        uint8_t frame = (PC::frameCount % 12) < 6 ? 0 : 1;
-    #else
-        uint8_t frame = Constants::Mothership_Frames[(PC::frameCount % 36) / 6];
-    #endif
-    
+    uint8_t frame = (PC::frameCount % 12) < 6 ? 0 : 1;
 
-    if (mothership.getHeight() < Constants::ScreenHeight) {
+    if (motherships[0].getHeight() < Constants::ScreenHeight) {
 
-        switch (mothership.getExplosionCounter()) {
+        switch (motherships[0].getExplosionCounter()) {
 
             case 0:
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
                 break;
 
             case 1 ... Constants::MothershipExplosionMax / 2:
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Explosion[1]);
                 break;
 
             case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax - 1:
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Explosion[0]);
                 break;
 
             case Constants::MothershipExplosionMax:
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
-                launchParticles(GameRotation::Landscape, mothership.getHeight() + (Constants::MothershipWidth / 2), mothership.getPosDisplay() + (Constants::MothershipHeight / 2));
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Normal::Mothership[frame]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Explosion[0]);
+                launchParticles(GameRotation::Landscape, motherships[0].getHeight() + (Constants::MothershipWidth / 2), motherships[0].getPosDisplay() + (Constants::MothershipHeight / 2), 3);
                 break;
 
         }
@@ -148,25 +136,25 @@ void Game::tugOfWar() {
     }
     else {
 
-        switch (mothership.getExplosionCounter()) {
+        switch (motherships[0].getExplosionCounter()) {
 
             case 0:
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Rotated::Mothership[frame]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Rotated::Mothership[frame]);
                 break;
 
             case 1 ... Constants::MothershipExplosionMax / 2:
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[1]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Explosion[1]);
                 break;
 
             case (Constants::MothershipExplosionMax / 2) + 1 ... Constants::MothershipExplosionMax - 1:
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Rotated::Mothership[frame]);
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Rotated::Mothership[frame]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Explosion[0]);
                 break;
 
             case Constants::MothershipExplosionMax:
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Rotated::Mothership[frame]);
-                PD::drawBitmap(mothership.getHeight(), mothership.getPosDisplay(), Images::Portrait::Explosion[0]);
-                launchParticles(GameRotation::Landscape, mothership.getHeight() + (Constants::MothershipWidth / 2), mothership.getPosDisplay() + (Constants::MothershipHeight / 2));
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Rotated::Mothership[frame]);
+                PD::drawBitmap(motherships[0].getHeight(), motherships[0].getPosDisplay(), Images::Portrait::Explosion[0]);
+                launchParticles(GameRotation::Landscape, motherships[0].getHeight() + (Constants::MothershipWidth / 2), motherships[0].getPosDisplay() + (Constants::MothershipHeight / 2), 3);
                 break;
 
         }

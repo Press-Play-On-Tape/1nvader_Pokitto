@@ -21,11 +21,7 @@ namespace Images {
         #include "title/landscape/LeftArrow_02.h"
         #include "title/landscape/Lock.h"
 
-        #ifdef NEW_GRAPHICS
-            #include "title/landscape/Mountain_New.h"
-        #else
-            #include "title/landscape/Mountain.h"
-        #endif
+        #include "title/landscape/Mountain_New.h"
 
         #include "title/landscape/Rotate.h"
         #include "title/landscape/WaveCleared_00.h"
@@ -81,18 +77,8 @@ namespace Images {
         #include "title/portrait/WaveCleared_05.h"
         #include "title/portrait/WaveCleared_06.h"
 
-        #ifdef NEW_GRAPHICS
-
-            #include "title/portrait/Mountain_Top_New.h"
-            #include "title/portrait/Mountain_Bot_New.h"
-
-        #else
-
-            #include "title/portrait/Mountain_Top.h"
-            #include "title/portrait/Mountain_Bot.h"
-
-        #endif
-
+        #include "title/portrait/Mountain_Top_New.h"
+        #include "title/portrait/Mountain_Bot_New.h"
 
         const uint8_t * const DownArrow[] = { 
             DownArrow_00,
