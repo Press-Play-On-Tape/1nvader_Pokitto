@@ -11,17 +11,17 @@ using PD = Pokitto::Display;
 //
 void Game::title_Init() {
 
-    gameState = GameState::Title;
-    titleScreenVars.reset(this->cookie->gameRotation);
+    this->gameVars.gameState = GameState::Title;
+    this->titleScreenVars.reset(this->cookie->gameRotation);
 
     #ifdef SOUNDS
         playTheme(Theme::Main);
     #endif
 
-    titleScreenVars.levels = 0;
+    this->titleScreenVars.levels = 0;
 
     for (uint8_t i = 0; i < 3; i++) {
-        if (this->cookie->getLevel(i) == 1) titleScreenVars.levels++;
+        if (this->cookie->getLevel(i) == 1) this->titleScreenVars.levels++;
     }
 
 }   
@@ -37,7 +37,7 @@ void Game::title() {
     
     if (PC::buttons.pressed(BTN_B)) {
 
-        gameState = GameState::Title_Init;
+        this->gameVars.gameState = GameState::Title_Init;
         this->cookie->saveRotation(this->cookie->gameRotation == GameRotation::Landscape ? GameRotation::Portrait : GameRotation::Landscape);
 
     }
@@ -48,9 +48,9 @@ void Game::title() {
 
         case GameRotation::Portrait:
 
-            PD::drawBitmap(titleScreenVars.counter, 21, Images::Portrait::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
+            PD::drawBitmap(this->titleScreenVars.counter, 21, Images::Portrait::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
 
-            switch (titleScreenVars.counter) {
+            switch (this->titleScreenVars.counter) {
 
                 case 79:
                     renderPlayerSelection(true);
@@ -60,18 +60,18 @@ void Game::title() {
                 case 80 ... 87:
                     renderPlayerSelection(true);
                     renderInvaderSign();
-                    titleScreenVars.counter++;
+                    this->titleScreenVars.counter++;
                     break;
 
                 case 88 ... 95:
                     renderPlayerSelection(false);
                     renderInvaderSign();
-                    titleScreenVars.counter++;
+                    this->titleScreenVars.counter++;
                     break;
 
                 case 96 ... 110:
                     renderPlayerSelection(false);
-                    titleScreenVars.counter++;
+                    this->titleScreenVars.counter++;
                     break;
 
                 case 111:
@@ -81,11 +81,11 @@ void Game::title() {
                     switch (this->cookie->gameMode) {
 
                         case GameMode::Single ... GameMode::Double:
-                            gameState = GameState::Game_Init;
+                            this->gameVars.gameState = GameState::Game_Init;
                             break;
 
                         case GameMode::TugOfWar:
-                            gameState = GameState::TugOfWar_Init;
+                            this->gameVars.gameState = GameState::TugOfWar_Init;
                             break;
 
                     }
@@ -97,18 +97,20 @@ void Game::title() {
             if (PC::buttons.pressed(BTN_RIGHT) && this->cookie->gameMode != GameMode::Single) { 
 
                 this->cookie->gameMode--;
+                this->cookie->saveCookie();
             
             }
 
-            if (PC::buttons.pressed(BTN_LEFT) && static_cast<uint8_t>(this->cookie->gameMode) < titleScreenVars.levels) { 
+            if (PC::buttons.pressed(BTN_LEFT) && static_cast<uint8_t>(this->cookie->gameMode) < this->titleScreenVars.levels) { 
 
                 this->cookie->gameMode++;
+                this->cookie->saveCookie();
 
             }
 
-            if (PC::buttons.pressed(BTN_A) && titleScreenVars.counter == 79) {
+            if (PC::buttons.pressed(BTN_A) && this->titleScreenVars.counter == 79) {
 
-                titleScreenVars.counter = 80;
+                this->titleScreenVars.counter = 80;
 
             }
 
@@ -154,9 +156,9 @@ void Game::title() {
 
         case GameRotation::Landscape:
 
-            PD::drawBitmap(5, 6 + titleScreenVars.counter, Images::Landscape::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
+            PD::drawBitmap(5, 6 + this->titleScreenVars.counter, Images::Landscape::MOTHERSHIP_SIZE_PORTRAIT::Mothership_Title[frame]);
 
-            switch (titleScreenVars.counter) {
+            switch (this->titleScreenVars.counter) {
 
                 case 0:
                     renderPlayerSelection(true);
@@ -166,18 +168,18 @@ void Game::title() {
                 case -8 ... -1:
                     renderPlayerSelection(true);
                     renderInvaderSign();
-                    titleScreenVars.counter--;
+                    this->titleScreenVars.counter--;
                     break;
 
                 case -18 ... -9:
                     renderPlayerSelection(false);
                     renderInvaderSign();
-                    titleScreenVars.counter--;
+                    this->titleScreenVars.counter--;
                     break;
 
                 case -38 ... -19:
                     renderPlayerSelection(false);
-                    titleScreenVars.counter--;
+                    this->titleScreenVars.counter--;
                     break;
 
                 case -39:
@@ -185,18 +187,18 @@ void Game::title() {
                     switch (this->cookie->gameMode) {
 
                         case GameMode::Single ... GameMode::Double:
-                            gameState = GameState::Game_Init;
+                            this->gameVars.gameState = GameState::Game_Init;
                             break;
 
                         case GameMode::TugOfWar:
 
                             if (this->cookie->gameRotation == GameRotation::Landscape) {
                                 this->cookie->gameRotation = this->cookie->gameRotation == GameRotation::Landscape ? GameRotation::Portrait : GameRotation::Landscape;
-                                gameState = GameState::Title_Init;
+                                this->gameVars.gameState = GameState::Title_Init;
                                 this->cookie->saveRotation(this->cookie->gameRotation);
                             }
                             
-                            gameState = GameState::TugOfWar_Init;
+                            this->gameVars.gameState = GameState::TugOfWar_Init;
                             break;
 
                     }
@@ -208,12 +210,14 @@ void Game::title() {
             if (PC::buttons.pressed(BTN_UP) && this->cookie->gameMode != GameMode::Single) { 
 
                 this->cookie->gameMode--;
+                this->cookie->saveCookie();
 
             }
 
-            if (PC::buttons.pressed(BTN_DOWN) && static_cast<uint8_t>(this->cookie->gameMode) < titleScreenVars.levels) { 
+            if (PC::buttons.pressed(BTN_DOWN) && static_cast<uint8_t>(this->cookie->gameMode) < this->titleScreenVars.levels) { 
 
                 this->cookie->gameMode++;
+                this->cookie->saveCookie();
 
             }
 
@@ -255,9 +259,9 @@ void Game::title() {
 
             }
 
-            if (PC::buttons.pressed(BTN_A) && titleScreenVars.counter == 0) { 
+            if (PC::buttons.pressed(BTN_A) && this->titleScreenVars.counter == 0) { 
 
-                titleScreenVars.counter = -1;
+                this->titleScreenVars.counter = -1;
 
             }
 

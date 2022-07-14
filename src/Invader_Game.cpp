@@ -8,11 +8,11 @@ using PD = Pokitto::Display;
 
 void Game::game_Init() {
 
-    gameState = GameState::Game;
+    this->gameVars.gameState = GameState::Game;
 
-    motherships[0].reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
-    motherships[1].reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, false);
-    gamePlayVars.bombCounter = random(128, 256);
+    motherships[0].reset(this->gameVars, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
+    motherships[1].reset(this->gameVars, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, false);
+    this->gameVars.bombCounter = random(128, 256);
 
     player1.reset(0);
     player2.reset(1);
@@ -65,9 +65,13 @@ void Game::game_Init() {
 
             break;
 
-    }            
+    }        
 
-    //player1.setScore(300);
+
+    // Reset counter and wave ..
+
+    this->gameVars.counter = Constants::MothershipCounterMax;
+	this->gameVars.wave = 0;
 
 }   
 
@@ -76,9 +80,9 @@ void Game::game() {
 
     // Randomly drop a bomb ?
 
-    if (!gamePlayVars.waveCleared) {
+    if (!this->gameVars.waveCleared) {
 
-        if (player1.getScore() + player2.getScore() >= Constants::Score_DropBomb) {
+        if ((player1.getScore() + player2.getScore()) >= Constants::Score_DropBomb) {
 
             for (Mothership &mothership : this->motherships) {
 
@@ -88,11 +92,11 @@ void Game::game() {
 
                         if ((this->cookie->gameRotation == GameRotation::Landscape && mothership.getPosDisplay() > -10 && mothership.getPosDisplay() < 93) || (this->cookie->gameRotation == GameRotation::Portrait && mothership.getPosDisplay() > -4 && mothership.getPosDisplay() < 76)) {
 
-                            gamePlayVars.bombCounter--;
+                            this->gameVars.bombCounter--;
 
                         }
 
-                        if (gamePlayVars.bombCounter == 0) {
+                        if (this->gameVars.bombCounter == 0) {
 
                             #ifdef SOUNDS
                                 playSoundEffect(SoundEffect::Drop_Bomb);
@@ -102,7 +106,7 @@ void Game::game() {
                             bomb.setPos(mothership.getPosDisplay() + 10);
                             bomb.setHeight(mothership.getHeight() + 6);
 
-                            gamePlayVars.bombCounter = random(128, 256);
+                            this->gameVars.bombCounter = random(128, 256);
 
                         }
 
@@ -121,7 +125,7 @@ void Game::game() {
 
             if (mothership.isActive()) {
 
-                if (mothership.getCanTurn() && player1.getScore() + player2.getScore() >= Constants::Score_ChangeDirection) {
+                if (mothership.getCanTurn() && (player1.getScore() + player2.getScore()) >= Constants::Score_ChangeDirection) {
 
                     uint8_t randMax = (player1.getScore() + player2.getScore()) / 16;
                     if (randMax < 20) randMax = 20;
@@ -205,11 +209,11 @@ void Game::game() {
             movePlayer(player2, player1);
 
             if (motherships[0].isActive()) {
-                motherships[0].move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2, &motherships[1]);
+                motherships[0].move(this->gameVars, player1, player2, &motherships[1]);
             }
 
             if (motherships[1].isActive()) {
-                motherships[1].move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2, &motherships[0]);
+                motherships[1].move(this->gameVars, player1, player2, &motherships[0]);
             }
 
         }
@@ -218,17 +222,17 @@ void Game::game() {
             movePlayer1();
 
             if (motherships[0].isActive()) {
-                motherships[0].move(this->cookie->gameRotation, this->cookie->gameMode, player1, &motherships[1]);
+                motherships[0].move(this->gameVars, player1, &motherships[1]);
             }
 
             if (motherships[1].isActive()) {
-                motherships[1].move(this->cookie->gameRotation, this->cookie->gameMode, player1, &motherships[0]);
+                motherships[1].move(this->gameVars, player1, &motherships[0]);
             }
 
         }
 
-        if (player1.getBulletActive() && !gamePlayVars.waveCleared)      moveBullet(player1); 
-        if (player2.getBulletActive() && !gamePlayVars.waveCleared)      moveBullet(player2);
+        if (player1.getBulletActive() && !this->gameVars.waveCleared)      moveBullet(player1); 
+        if (player2.getBulletActive() && !this->gameVars.waveCleared)      moveBullet(player2);
         if (bomb.getActive()) moveBomb();
 
         player1.decExplodeCounter();
@@ -251,13 +255,13 @@ void Game::game() {
 
                                 case Movement::Up:
                                     if (mothership.getPosDisplay() < -Constants::MothershipHeight) {
-                                        gameState = GameState::GameOver_Init;
+                                        this->gameVars.gameState = GameState::GameOver_Init;
                                     }
                                     break;
 
                                 case Movement::Down:
                                     if (mothership.getPosDisplay() > Constants::ScreenHeight) {
-                                        gameState = GameState::GameOver_Init;
+                                        this->gameVars.gameState = GameState::GameOver_Init;
                                     }
                                     break;
 
@@ -285,13 +289,13 @@ void Game::game() {
 
                                 case Movement::Left:
                                     if (mothership.getPosDisplay() < -Constants::MothershipHeight) {
-                                        gameState = GameState::GameOver_Init;
+                                        this->gameVars.gameState = GameState::GameOver_Init;
                                     }
                                     break;
 
                                 case Movement::Right:
                                     if (mothership.getPosDisplay() > Constants::ScreenWidth) {
-                                        gameState = GameState::GameOver_Init;
+                                        this->gameVars.gameState = GameState::GameOver_Init;
                                     }
                                     break;
 
@@ -314,12 +318,12 @@ void Game::game() {
 
         // Launch a second mothership?
 
-        if (player1.getScore() + player2.getScore() > Constants::Score_Double && random(0, Constants::Random_AddEnemy) == 0) {
-
+        if ((player1.getScore() + player2.getScore()) > Constants::Score_Double && random(0, Constants::Random_AddEnemy) == 0) {
+printf("get Score %i %i\n", player1.getScore() , player2.getScore());
             if (!motherships[0].isActive()) {
 
                 if ((this->cookie->gameRotation == GameRotation::Landscape && motherships[1].getHeight() > 24) || (this->cookie->gameRotation == GameRotation::Portrait && motherships[1].getHeight() >= 28)) {
-                    motherships[0].reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
+                    motherships[0].reset(this->gameVars, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
                 }
 
             }
@@ -327,7 +331,7 @@ void Game::game() {
             if (!motherships[1].isActive()) {
 
                 if ((this->cookie->gameRotation == GameRotation::Landscape && motherships[0].getHeight() > 24) || (this->cookie->gameRotation == GameRotation::Portrait && motherships[0].getHeight() >= 28)) {
-                    motherships[1].reset(this->cookie->gameRotation, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
+                    motherships[1].reset(this->gameVars, this->cookie->gameRotation == GameRotation::Landscape ? -Constants::MothershipRowHeight : Constants::MothershipRowHeight, EnemyType::Single, true);
                 }
 
             }
@@ -505,26 +509,30 @@ void Game::game() {
 
     }
 
-    if (gamePlayVars.waveCleared) {
+    if (this->gameVars.waveCleared) {
 
 
-        // Clear an bullets from the screen ..
+        // Clear any bullets from the screen ..
 
         if (player1.getBulletActive()) player1.setBulletActive(false);
         if (player2.getBulletActive()) player2.setBulletActive(false);
 
-        if (gamePlayVars.waveCounter == 8) {
+        if (this->gameVars.waveCounter == 8) {
             #ifdef SOUNDS
                 playSoundEffect(SoundEffect::Level_Cleared);
             #endif
         }
 
-        if (gamePlayVars.waveCounter >= 55 && PC::frameCount % 64 == 0) { launchParticles(this->cookie->gameRotation, 3); }
+        if (this->gameVars.waveCounter >= 55) {
+            
+            if (PC::frameCount % 64 == 0) { launchParticles(this->cookie->gameRotation, 3); }
 
-        if (PC::buttons.pressed(BTN_LEFT) || PC::buttons.pressed(BTN_RIGHT) || PC::buttons.pressed(BTN_UP) || PC::buttons.pressed(BTN_DOWN) || PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B)) {
+            if (PC::buttons.pressed(BTN_LEFT) || PC::buttons.pressed(BTN_RIGHT) || PC::buttons.pressed(BTN_UP) || PC::buttons.pressed(BTN_DOWN) || PC::buttons.pressed(BTN_A) || PC::buttons.pressed(BTN_B)) {
 
-            gamePlayVars.waveCounter = 0;
-            gamePlayVars.waveCleared = false;
+                this->gameVars.waveCounter = 0;
+                this->gameVars.waveCleared = false;
+
+            }
 
         }
 
@@ -534,11 +542,11 @@ void Game::game() {
             movePlayer(player2, player1);
 
             if (motherships[0].isActive()) {
-                if (motherships[0].getExplosionCounter() > 0) motherships[0].move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2, &motherships[1]);
+                if (motherships[0].getExplosionCounter() > 0) motherships[0].move(this->gameVars, player1, player2, &motherships[1]);
             }
 
             if (motherships[1].isActive()) {
-                if (motherships[1].getExplosionCounter() > 0) motherships[1].move(this->cookie->gameRotation, this->cookie->gameMode, player1, player2, &motherships[0]);
+                if (motherships[1].getExplosionCounter() > 0) motherships[1].move(this->gameVars, player1, player2, &motherships[0]);
             }
 
         }
@@ -547,19 +555,19 @@ void Game::game() {
             movePlayer1();
 
             if (motherships[0].isActive()) {
-                if (motherships[0].getExplosionCounter() > 0) motherships[0].move(this->cookie->gameRotation, this->cookie->gameMode, player1, &motherships[1]);
+                if (motherships[0].getExplosionCounter() > 0) motherships[0].move(this->gameVars, player1, &motherships[1]);
             }
 
             if (motherships[1].isActive()) {
-                if (motherships[1].getExplosionCounter() > 0) motherships[1].move(this->cookie->gameRotation, this->cookie->gameMode, player1, &motherships[0]);
+                if (motherships[1].getExplosionCounter() > 0) motherships[1].move(this->gameVars, player1, &motherships[0]);
             }
 
         }
 
-        uint8_t idx = gamePlayVars.waveCounter / 8;
+        uint8_t idx = this->gameVars.waveCounter / 8;
 
         updateAndRenderParticles(this->cookie->gameRotation);
-
+printf("%i\n", this->gameVars.waveCounter);
         switch (this->cookie->gameRotation) {
 
             case GameRotation::Portrait:
@@ -576,7 +584,7 @@ void Game::game() {
 
         }         
 
-        if (gamePlayVars.waveCounter < 55) gamePlayVars.waveCounter++;
+        if (this->gameVars.waveCounter < 55) this->gameVars.waveCounter++;
 
     }
 
@@ -810,8 +818,8 @@ void Game::moveBullet(Player &player) {
                             if (this->cookie->gameMode == GameMode::TugOfWar) {
 
                                 mothership.explode(player.getPlayerIdx() == 0 ? -Constants::TugOfWarRowAdjustment : Constants::TugOfWarRowAdjustment);
-                                gamePlayVars.waveCleared = false;
-                                mothership.decCounter();
+                                this->gameVars.waveCleared = false;
+                                this->gameVars.decCounter();
                                 player.incScore();
 
                             }
@@ -819,7 +827,7 @@ void Game::moveBullet(Player &player) {
 
                                 mothership.explode(Constants::MothershipRowHeight);
                                 if (color == 3) {
-                                    gamePlayVars.waveCleared = mothership.decCounter();
+                                    this->gameVars.waveCleared = this->gameVars.decCounter();
                                     player.incScore();
                                 }
 
@@ -869,7 +877,7 @@ void Game::moveBullet(Player &player) {
                             mothership.explode(-Constants::MothershipRowHeight);                    
 
                             if (color == 3) {
-                                gamePlayVars.waveCleared = mothership.decCounter();
+                                this->gameVars.waveCleared = this->gameVars.decCounter();
                                 player.incScore();
                             }
                             

@@ -9,6 +9,7 @@ using PD = Pokitto::Display;
 void Game::setup(GameCookie *cookie) {
 
     this->cookie = cookie;
+    this->gameVars.cookie = cookie;
 
 }
 
@@ -17,7 +18,7 @@ void Game::loop() {
     PD::clear();
     PC::buttons.pollButtons();
 
-    switch (this->gameState) {
+    switch (this->gameVars.gameState) {
 
         case GameState::Splash_Init:
             splashScreen_Init();

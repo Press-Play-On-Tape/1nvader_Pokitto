@@ -8,6 +8,7 @@
 #include "utils/Enums.h"
 #include "utils/Structs.h"
 #include "utils/GameCookie.h"
+#include "utils/GameVars.h"
 #include "entities/Entities.h"
 
 using PC=Pokitto::Core;
@@ -22,11 +23,10 @@ class Game {
         TitleScreenVars titleScreenVars;
         SplashScreenVariables splashScreenVariables;
         GameOverScreenVars gameOverScreenVars;
-        GamePlayVars gamePlayVars;
         Particle particles[Constants::ParticlesMax];
 
         GameCookie *cookie;
-        GameStats gameStats;
+        GameVars gameVars;
 
         Player player1;
         Player player2;
@@ -34,8 +34,6 @@ class Game {
         Bomb bomb;
 
         File mainThemeFile;
-
-        GameState gameState = GameState::Splash_Init;
 
 
     public:

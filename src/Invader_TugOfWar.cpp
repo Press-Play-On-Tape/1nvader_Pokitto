@@ -9,9 +9,9 @@ using PD = Pokitto::Display;
 
 void Game::tugOfWar_Init() {
 
-    gameState = GameState::TugOfWar;
+    this->gameVars.gameState = GameState::TugOfWar;
 
-    motherships[0].reset(this->cookie->gameRotation, 0, EnemyType::Single, true);
+    motherships[0].reset(this->gameVars, 0, EnemyType::Single, true);
     motherships[0].setHeight((Constants::ScreenWidth / 2) - 4);
     motherships[1].setActive(false);
 
@@ -53,7 +53,7 @@ void Game::tugOfWar() {
     
     movePlayer(player1, player2);
     movePlayer(player2, player1);
-    motherships[0].moveTugOfWar(player1, player2);
+    motherships[0].moveTugOfWar(this->gameVars, player1, player2);
 
     if (player1.getBulletActive())      moveBullet(player1); 
     if (player2.getBulletActive())      moveBullet(player2);
@@ -69,13 +69,13 @@ void Game::tugOfWar() {
 
             case Movement::Up:
                 if (motherships[0].getPosDisplay() < -Constants::MothershipHeight) {
-                    gameState = GameState::GameOver_Init;
+                    this->gameVars.gameState = GameState::GameOver_Init;
                 }
                 break;
 
             case Movement::Down:
                 if (motherships[0].getPosDisplay() > Constants::ScreenHeight) {
-                    gameState = GameState::GameOver_Init;
+                    this->gameVars.gameState = GameState::GameOver_Init;
                 }
                 break;
 

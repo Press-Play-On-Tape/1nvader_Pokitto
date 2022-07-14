@@ -7,27 +7,6 @@ struct SplashScreenVariables {
 
 };
 
-struct GameStats {
-
-    public: 
-
-        GameStats() { };
-
-        TitleScreenMode titleSel = TitleScreenMode::NewGame;
-
-        void reset() {
-        }
-
-};
-
-struct GamePlayVars {
-
-    uint16_t bombCounter;
-    uint8_t waveCounter;
-    bool waveCleared;
-
-};
-
 struct TitleScreenVars {
 
     int16_t counter = 0;

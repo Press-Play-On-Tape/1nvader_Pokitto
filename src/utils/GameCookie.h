@@ -17,8 +17,6 @@ class GameCookie : public Pokitto::Cookie {
 		uint8_t levelLock[3];
 		SoundEffects sfx;
 
-		uint8_t counter = Constants::MothershipCounterMax; // not saved
-
 	public:
 
 		void initialise() {
@@ -38,13 +36,6 @@ class GameCookie : public Pokitto::Cookie {
 			this->saveCookie();
 
 		}
-
-
-		/* -----------------------------------------------------------------------------
-		*   Countdown counter. 
-		*/
-        uint8_t getCounter()                                { return this->counter; }
-        void setCounter(uint8_t val)                        { this->counter = val; }
 
 
 		/* -----------------------------------------------------------------------------
@@ -148,3 +139,4 @@ class GameCookie : public Pokitto::Cookie {
 		}
 
 };
+

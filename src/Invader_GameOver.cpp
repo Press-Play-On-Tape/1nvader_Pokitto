@@ -8,7 +8,7 @@ using PD = Pokitto::Display;
 
 void Game::gameOver_Init() {
 
-    gameState = GameState::GameOver;
+    this->gameVars.gameState = GameState::GameOver;
     gameOverScreenVars.reset();
 
     switch (this->cookie->gameRotation) {
@@ -105,7 +105,7 @@ void Game::gameOver() {
 
     if (PC::buttons.pressed(BTN_A)) { 
 
-        gameState = GameState::Title_Init;
+        this->gameVars.gameState = GameState::Title_Init;
 
     }
 

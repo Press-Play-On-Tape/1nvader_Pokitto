@@ -15,9 +15,9 @@
 
 namespace Constants {
 
-    constexpr uint8_t Score_DropBomb = 10;
-    constexpr uint8_t Score_ChangeDirection = 25;
-    constexpr uint8_t Score_Double = 50;
+    constexpr uint8_t Score_DropBomb = 25;
+    constexpr uint8_t Score_ChangeDirection = 50;
+    constexpr uint8_t Score_Double = 90;
 
     constexpr uint8_t Random_RemoveEnemy = 5;
     constexpr uint8_t Random_AddEnemy = 25;

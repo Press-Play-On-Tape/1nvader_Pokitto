@@ -233,8 +233,8 @@ void Game::renderScores(bool flashPlayer1, bool flashPlayer2) {
                         renderScore(28, Constants::ScreenWidth - 7, player1.getScore());
                     }
 
-                    PD::drawBitmap(Constants::ScreenWidth - 7, 53, Images::Portrait::Normal::Numbers[this->cookie->getCounter() / 10]);
-                    PD::drawBitmap(Constants::ScreenWidth - 7, 57, Images::Portrait::Normal::Numbers[this->cookie->getCounter() % 10]);
+                    PD::drawBitmap(Constants::ScreenWidth - 7, 53, Images::Portrait::Normal::Numbers[this->gameVars.getCounter() / 10]);
+                    PD::drawBitmap(Constants::ScreenWidth - 7, 57, Images::Portrait::Normal::Numbers[this->gameVars.getCounter() % 10]);
 
                     break;
 
@@ -248,8 +248,8 @@ void Game::renderScores(bool flashPlayer1, bool flashPlayer2) {
                         renderScore(70, Constants::ScreenWidth - 7, player2.getScore());
                     }
 
-                    PD::drawBitmap(Constants::ScreenWidth - 7, 40, Images::Portrait::Normal::Numbers[this->cookie->getCounter() / 10]);
-                    PD::drawBitmap(Constants::ScreenWidth - 7, 44, Images::Portrait::Normal::Numbers[this->cookie->getCounter() % 10]);
+                    PD::drawBitmap(Constants::ScreenWidth - 7, 40, Images::Portrait::Normal::Numbers[this->gameVars.getCounter() / 10]);
+                    PD::drawBitmap(Constants::ScreenWidth - 7, 44, Images::Portrait::Normal::Numbers[this->gameVars.getCounter() % 10]);
 
                     break;
                 
@@ -281,8 +281,8 @@ void Game::renderScores(bool flashPlayer1, bool flashPlayer2) {
                     renderScore(100, 0, player2.getScore());
                 }
 
-                PD::drawBitmap(51, 0, Images::Landscape::Numbers[this->cookie->getCounter() / 10]);
-                PD::drawBitmap(55, 0, Images::Landscape::Numbers[this->cookie->getCounter() % 10]);
+                PD::drawBitmap(51, 0, Images::Landscape::Numbers[this->gameVars.getCounter() / 10]);
+                PD::drawBitmap(55, 0, Images::Landscape::Numbers[this->gameVars.getCounter() % 10]);
 
             }
             else {
@@ -291,8 +291,8 @@ void Game::renderScores(bool flashPlayer1, bool flashPlayer2) {
                     renderScore(24, 0, player1.getScore());
                 }
 
-                PD::drawBitmap(91, 0, Images::Landscape::Numbers[this->cookie->getCounter() / 10]);
-                PD::drawBitmap(95, 0, Images::Landscape::Numbers[this->cookie->getCounter() % 10]);
+                PD::drawBitmap(91, 0, Images::Landscape::Numbers[this->gameVars.getCounter() / 10]);
+                PD::drawBitmap(95, 0, Images::Landscape::Numbers[this->gameVars.getCounter() % 10]);
 
             }
 
